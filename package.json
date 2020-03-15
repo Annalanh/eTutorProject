@@ -1,0 +1,22 @@
+{
+  "name": "etutorproject",
+  "version": "1.0.0",
+  "description": "Etutoring coursework",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Annalanh/eTutorProject.git"
+  },
+  "author": "Nguyen Phuong Thao, Pham Tuan Anh, Pham Minh Thang",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Annalanh/eTutorProject/issues"
+  },
+  "homepage": "https://github.com/Annalanh/eTutorProject#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
