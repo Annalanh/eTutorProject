@@ -3,7 +3,7 @@
 This is a web-based secure role-based system for eTutoring in a large university developed by Greenwich students. Some features of this system:
 
 1. Authentication by roles : admin, staff, tutor and student.
-2. Authorization with assigning new classes, manage users' accounts.
+2. Authorization with assigning new classes, managing users' accounts.
 3. Real-time chat with individuals or group of people.
 4. Upload files.
 5. Arrange meetings

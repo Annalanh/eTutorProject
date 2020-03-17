@@ -15,7 +15,7 @@ const userListFake = [
         password: 789789
     }
 ]
-class Authenticate {
+class Authentication {
     loginPage(req, res) {
         if (req.session.userId) {
             res.redirect('/')
@@ -49,4 +49,4 @@ class Authenticate {
         });
     }
 }
-module.exports = new Authenticate()
+module.exports = new Authentication()
