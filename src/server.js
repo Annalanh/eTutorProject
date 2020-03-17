@@ -6,8 +6,16 @@ const session = require('express-session')
 const bodyParser = require('body-parser')
 const cookieParser = require('cookie-parser')
 const authRouter = require('./controllers/auth/router')
+const userRouter = require('./controllers/user/router')
 const assetsDirectoryPath = path.join(__dirname,'..','/assets')
+const { sequelize } = require('./config/database')
 
+/**
+ * sync database
+ */
+sequelize.sync({force: true}).then(() => {
+    console.log('db sync');
+})
 /**
  * use assets folder
  */
@@ -22,9 +30,13 @@ app.engine('hbs', hbs({
     extname:'hbs', 
     defaultLayout: 'main'
 }))
+
 app.set('views', path.join(__dirname ,'..', 'views'));
 app.set('view engine', 'hbs')
 
+/**
+ * setup for body-parser
+ */
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
@@ -49,13 +61,15 @@ app.use("/auth", authRouter)
 /**
  * check login middleware
  */
-app.use(function(req, res, next){
-    if(req.session.userId){
-        next()
-    }else{
-        res.redirect('http://localhost:3000/auth/login')
-    }
-})
+// app.use(function(req, res, next){
+//     if(req.session.userId){
+//         next()
+//     }else{
+//         res.redirect('http://localhost:3000/auth/login')
+//     }
+// })
+
+app.use("/user", userRouter)
 
 app.use("/", (req, res) => {
     res.send('hihihihihi')
