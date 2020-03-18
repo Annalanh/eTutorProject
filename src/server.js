@@ -6,6 +6,7 @@ const session = require('express-session')
 const bodyParser = require('body-parser')
 const cookieParser = require('cookie-parser')
 const authRouter = require('./controllers/auth/router')
+const renderUIRouter = require('./controllers/ui-render/router')
 const assetsDirectoryPath = path.join(__dirname,'..','/assets')
 
 /**
@@ -35,7 +36,7 @@ app.use(bodyParser.json())
 app.use(session({
     name: 'sessionId',
     // cookie: { maxAge: Date.now() + (1 * 24 * 60 * 60 * 1000) },
-    cookie: { maxAge: 1 * 60 * 1000 },
+    cookie: { maxAge: 10 * 60 * 1000 },
     secret: 'keyboard cat',
     resave: false, //Prevent session being saved back to the session store when it is not modified during request
     saveUninitialized: false, //do not save new session which is not modified 
@@ -50,14 +51,17 @@ app.use("/auth", authRouter)
  * check login middleware
  */
 app.use(function(req, res, next){
-    if(req.session.userId){
+    if(req.session.user){
         next()
     }else{
-        res.redirect('http://localhost:3000/auth/login')
+        res.redirect('/auth/login')
     }
 })
 
-app.use("/", (req, res) => {
-    res.send('hihihihihi')
-})
+/**
+ * Ui render router
+ */
+app.use("/", renderUIRouter)
+
+
 app.listen(process.env.PORT || 3000)

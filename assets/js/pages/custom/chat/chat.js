@@ -3,7 +3,6 @@
 // Class definition
 var KTAppChat = function () {
 	var chatAsideEl;
-	var chatContentEl;
 
 	// Private functions
 	var initAside = function () {
@@ -79,13 +78,6 @@ var KTAppChat = function () {
 
 			// init inline chat example
 			KTChat.setup(KTUtil.getByID('kt_chat_content'));
-
-			// trigger click to show popup modal chat on page load
-			if (KTUtil.getByID('kt_app_chat_launch_btn')) {
-				setTimeout(function() {
-					KTUtil.getByID('kt_app_chat_launch_btn').click();
-				}, 1000);
-			}
 		}
 	};
 }();

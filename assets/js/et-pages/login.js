@@ -49,17 +49,17 @@ $loginForm.submit((e) => {
 
 	$.ajax({
 		method: "POST",
-		url: "http://localhost:3000/auth/login",
+		url: "/auth/login",
 		data: { username, password }
 	})
-		.done(function (data) {
-			KTApp.unprogress($loginFormButton);
-			if(data.status){
-				window.location.href = "/"
-			}else{
-				showErrorMsg($loginForm, 'danger', 'Incorrect username or password. Please try again.');
-			}
-		});
+	.done(function (data) {
+		KTApp.unprogress($loginFormButton);
+		if(data.status){
+			window.location.href = "/dashboard"
+		}else{
+			showErrorMsg($loginForm, 'danger', 'Incorrect username or password. Please try again.');
+		}
+	});
 })
 
 
