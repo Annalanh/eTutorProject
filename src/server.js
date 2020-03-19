@@ -7,6 +7,7 @@ const bodyParser = require('body-parser')
 const cookieParser = require('cookie-parser')
 const authRouter = require('./controllers/auth/router')
 const userRouter = require('./controllers/user/router')
+const messageRouter = require('./controllers/message/router')
 const assetsDirectoryPath = path.join(__dirname,'..','/assets')
 
 
@@ -65,7 +66,7 @@ app.use("/auth", authRouter)
 // })
 
 app.use("/user", userRouter)
-
+app.use("/message", messageRouter)
 app.use("/", (req, res) => {
     res.send('hihihihihi')
 })
