@@ -7,7 +7,10 @@ const bodyParser = require('body-parser')
 const cookieParser = require('cookie-parser')
 const authRouter = require('./controllers/auth/router')
 const renderUIRouter = require('./controllers/ui-render/router')
+const userRouter = require('./controllers/user/router')
 const assetsDirectoryPath = path.join(__dirname,'..','/assets')
+
+
 
 /**
  * use assets folder
@@ -23,9 +26,13 @@ app.engine('hbs', hbs({
     extname:'hbs', 
     defaultLayout: 'main'
 }))
+
 app.set('views', path.join(__dirname ,'..', 'views'));
 app.set('view engine', 'hbs')
 
+/**
+ * setup for body-parser
+ */
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
@@ -57,11 +64,12 @@ app.use(function(req, res, next){
         res.redirect('/auth/login')
     }
 })
-
 /**
  * Ui render router
  */
 app.use("/", renderUIRouter)
+
+app.use("/user", userRouter)
 
 
 app.listen(process.env.PORT || 3000)
