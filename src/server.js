@@ -8,14 +8,9 @@ const cookieParser = require('cookie-parser')
 const authRouter = require('./controllers/auth/router')
 const userRouter = require('./controllers/user/router')
 const assetsDirectoryPath = path.join(__dirname,'..','/assets')
-const { sequelize } = require('./config/database')
 
-/**
- * sync database
- */
-sequelize.sync({force: true}).then(() => {
-    console.log('db sync');
-})
+
+
 /**
  * use assets folder
  */

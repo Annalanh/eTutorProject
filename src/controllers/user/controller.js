@@ -1,4 +1,5 @@
-const { UserModel } = require('../../config/database')
+const database = require('../../config/sequelize')
+const UserModel = database.User;
 class User {
     /*CRUD */
     //CREATE
