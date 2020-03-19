@@ -8,6 +8,7 @@ const cookieParser = require('cookie-parser')
 const authRouter = require('./controllers/auth/router')
 const renderUIRouter = require('./controllers/ui-render/router')
 const userRouter = require('./controllers/user/router')
+const messageRouter = require('./controllers/message/router')
 const assetsDirectoryPath = path.join(__dirname,'..','/assets')
 
 
@@ -71,5 +72,9 @@ app.use("/", renderUIRouter)
 
 app.use("/user", userRouter)
 
+app.use("/message", messageRouter)
 
+app.use("/", (req, res) => {
+    res.send('hihihihihi')
+})
 app.listen(process.env.PORT || 3000)

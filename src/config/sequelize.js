@@ -35,8 +35,8 @@ const GroupChat = groupChatModel(sequelize, Sequelize)
 const Message = messageModel(sequelize, Sequelize)
 
 //ClassRoom have exactly 1 staff and 1 tutor
-ClassRoom.hasOne(User, { as: 'Tutor', foreignKey: 'TutorId' })
-ClassRoom.hasOne(User, { as: 'Staff', foreignKey: 'StaffId' })
+ClassRoom.belongsTo(User, { as: 'Tutor', foreignKey: 'TutorId' })
+ClassRoom.belongsTo(User, { as: 'Staff', foreignKey: 'StaffId' })
 
 //Many-to-Many association StudentClassRoom
 ClassRoom.belongsToMany(User, { as: 'Students', through: 'Students_ClassRooms', foreignKey: 'classId' })
@@ -59,21 +59,26 @@ Comment.belongsTo(Post)
 
 //Message belongs to a group and sended by an user
 Message.belongsTo(User)
+User.hasMany(Message)
 Message.belongsTo(GroupChat)
+GroupChat.hasMany(Message)
 
 //Many-toMany association GroupsMembers
-GroupChat.belongsToMany(User, { as: 'Members', through: 'Groups_Members', foreignKey: 'memberId' })
-User.belongsToMany(GroupChat, { through: 'Groups_Members', foreignKey: 'groupId' })
+GroupChat.belongsToMany(User, { as: 'Members', through: 'Groups_Members', foreignKey: 'groupId' })
+User.belongsToMany(GroupChat, { as:'TalkingGroup', through: 'Groups_Members', foreignKey: 'memberId' })
 
 /**
  * sync database
  */
-sequelize.sync({ force: true})
+sequelize.sync({ force: true })
 .then(() => {
   console.log('Database & table created')
 })
 
 
 module.exports = {
-  User
+  User,
+  Message,
+  GroupChat,
+
 }
