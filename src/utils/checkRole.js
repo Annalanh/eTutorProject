@@ -1,11 +1,11 @@
 function isAdmin(req, res, next){
-    let roleId = req.session.user.roleId
-    if(roleId == 1) next()
+    let role = req.session.user.role
+    if(role == 'admin') next()
     else res.send('authorized')
 }
 function isStaff(req, res, next){
-    let roleId = req.session.user.roleId
-    if(roleId == 2) next()
+    let role = req.session.user.role
+    if(role == 'staff') next()
     else{
         res.render('401-error', {
             title: 'Etutoring',
@@ -14,8 +14,8 @@ function isStaff(req, res, next){
     }
 }
 function isTutor(req, res, next){
-    let roleId = req.session.user.roleId
-    if(roleId == 3) next()
+    let role = req.session.user.role
+    if(role == 'tutor') next()
     else{
         res.render('401-error', {
             title: 'Etutoring',
@@ -24,8 +24,8 @@ function isTutor(req, res, next){
     }
 }
 function isStudent(req, res, next){
-    let roleId = req.session.user.roleId
-    if(roleId == 4) next()
+    let role = req.session.user.role
+    if(role == 'student') next()
     else{
         res.render('401-error', {
             title: 'Etutoring',
@@ -34,8 +34,18 @@ function isStudent(req, res, next){
     }
 }
 function isStudentOrTutor(req, res, next){
-    let roleId = req.session.user.roleId
-    if(roleId == 3 || roleId == 4) next()
+    let role = req.session.user.role
+    if(role == "tutor" || role == "student") next()
+    else{
+        res.render('401-error', {
+            title: 'Etutoring',
+            layout: false
+        })
+    }
+}
+function isAdminOrStaff(req, res, next){
+    let role = req.session.user.role
+    if(role == "admin" || role == "staff") next()
     else{
         res.render('401-error', {
             title: 'Etutoring',
@@ -49,5 +59,6 @@ module.exports = {
     isStaff,
     isTutor,
     isStudent,
-    isStudentOrTutor
+    isStudentOrTutor,
+    isAdminOrStaff
 }

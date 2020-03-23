@@ -21,6 +21,10 @@ $signOutBtn.click((e) => {
 		url: "http://localhost:3000/auth/logout",
 	})
     .done(function (data) {
-        if(data.status) window.location.href = "http://localhost:3000/auth/login"
+        if(data.status) {
+            localStorage.removeItem('userId')
+            localStorage.removeItem('userName')
+            window.location.href = "http://localhost:3000/auth/login"
+        }
     });
 })

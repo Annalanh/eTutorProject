@@ -3,8 +3,119 @@
  * DOM Elements
  */
 const $chatListBox = KTUtil.getByID('kt_chat_aside');
+const $chatList = document.getElementById("et-chat-list")
 const $messageBox = KTUtil.getByID('kt_chat_content');
+const $messageList = document.getElementById('et-message-list')
+const $messageScroll = KTUtil.find($messageBox, '.kt-scroll');
+const $groupName = document.getElementById('et-group-name')
+const $messageForm = document.getElementById('et-message-form')
+const $messageText = document.getElementById('et-message-text')
+const $searchChatBoxForm = document.getElementById('et-search-chat-box-form')
+const $searchChatBoxInput = $('#et-search-chat-box-input')
+const $searchList = document.getElementById('et-search-list')
+const $searchName = document.getElementById('et-search-name')
+const $searchResult = document.getElementById('et-search-result')
+const $searchNotFound = document.getElementById('et-search-not-found')
+const $chatListItems = $chatList.childNodes
 
+let userGroupChats = []
+let newGroup = false;
+
+/**
+ * Create socket io 
+ */
+let socket = io()
+
+/**
+ * generate list of chatting users in the left chat list
+ */
+$.ajax({
+    method: "GET",
+    url: "/message/allChats",
+})
+.done(function (groups) {
+    console.log(groups)
+    groups.forEach((group, index) => {
+        let chatItem = document.createElement('div')
+        chatItem.setAttribute('group-id', group.groupId)
+        chatItem.className = 'et-chat-item'
+        if(index == 0) chatItem.classList.add('et-top-chat-item')
+        chatItem.innerHTML =  `<div class="kt-widget__item">
+                                    <span class="kt-media kt-media--circle">
+                                        <img src="assets/media/users/300_9.jpg" alt="image">
+                                    </span>
+                                    <div class="kt-widget__info">
+                                        <div class="kt-widget__section">
+                                            <a href="#" class="kt-widget__username">${group.groupName}</a>
+                                            <span class="kt-badge kt-badge--success kt-badge--dot"></span>
+                                        </div>
+                                        <span class="kt-widget__desc" id="et-latest-message-${group.groupId}">
+                                            ${group.latestMessage}
+                                        </span>
+                                    </div>
+                                </div>`
+        $chatList.appendChild(chatItem)
+        chatItem.addEventListener('click', (e) => {
+            renderMessageBox({ groupId: group.groupId, groupName: group.groupName })
+        })
+
+        userGroupChats.push(group.groupId)
+    })
+    /**
+     * add user to online user list and join user in its rooms/groups
+     */
+    socket.emit("joinOnline", { rooms: userGroupChats })
+});
+
+/**
+ * generate recent messages of current right chat 
+ */
+function renderMessageBox({ groupId, groupName }){
+    $.ajax({
+		method: "POST",
+		url: "/message/messages",
+		data: { groupId }
+	})
+	.done(function ({ messages, currentUserId }) {
+        console.log(messages)
+        /**
+         * render group name
+         */
+        $groupName.innerText = groupName
+        /**
+         * assgin group id to the right message box
+         */
+        $messageBox.setAttribute('group-id', groupId)
+        /**
+         * render recent messages
+         */
+        $messageList.innerHTML = ""
+        messages.forEach(message => {
+        let $messageItem = document.createElement('div')
+            if(message.senderId != currentUserId){
+                $messageItem.innerHTML = `<div class="kt-chat__message">
+                                            <div class="kt-chat__user">
+                                                <a href="#" class="kt-chat__username">${message.sender}</span></a>
+                                            </div>
+                                            <div class="kt-chat__text kt-bg-light-success">
+                                                ${message.content}
+                                            </div>
+                                        </div>`                
+            }else{
+                $messageItem.innerHTML = `<div class="kt-chat__message kt-chat__message--right">
+                                            <div class="kt-chat__user">
+                                                <a href="#" class="kt-chat__username">Me</span></a>
+                                            </div>
+                                            <div class="kt-chat__text kt-bg-light-brand">
+                                                ${message.content}
+                                            </div>
+                                        </div>`       
+            }
+            $messageList.appendChild($messageItem)   
+        })
+        $messageScroll.scrollTop = parseInt(KTUtil.css($messageList, 'height'));
+	});
+}
 /**
  * initialize beautiful scroll bar for chat list box (left)
  */
@@ -139,87 +250,237 @@ function initMessageBoxScrollBar(){
 
             // remove additional space
             height = height - 5;
-
             return height;
         }
     });
-
-    // messaging
-    var handleMessaging = function() {
-        var scrollEl = KTUtil.find($messageBox, '.kt-scroll');
-        var messagesEl = KTUtil.find($messageBox, '.kt-chat__messages');
-        var textarea = KTUtil.find($messageBox, '.kt-chat__input textarea');
-
-        if (textarea.value.length === 0 ) {
-            return;
-        }
-
-        var node = document.createElement("DIV");
-        KTUtil.addClass(node, 'kt-chat__message kt-chat__message--brand kt-chat__message--right');
-
-        var html =
-            '<div class="kt-chat__user">' +
-                '<span class="kt-chat__datetime">Just now</span>' +
-                '<a href="#" class="kt-chat__username">Jason Muller</span></a>' +
-                '<span class="kt-media kt-media--circle kt-media--sm">' +
-                    '<img src="./assets/media/users/100_12.jpg" alt="image">'  +
-                '</span>' +
-            '</div>' +
-            '<div class="kt-chat__text kt-bg-light-brand">' +
-                textarea.value
-            '</div>';
-
-        KTUtil.setHTML(node, html);
-        messagesEl.appendChild(node);
-        textarea.value = '';
-        scrollEl.scrollTop = parseInt(KTUtil.css(messagesEl, 'height'));
-
-        var ps;
-        if (ps = KTUtil.data(scrollEl).get('ps')) {
-            ps.update();
-        }
-
-        setTimeout(function() {
-            var node = document.createElement("DIV");
-            KTUtil.addClass(node, 'kt-chat__message kt-chat__message--success');
-
-            var html =
-                '<div class="kt-chat__user">' +
-                    '<span class="kt-media kt-media--circle kt-media--sm">' +
-                        '<img src="./assets/media/users/100_13.jpg" alt="image">'  +
-                    '</span>' +
-                    '<a href="#" class="kt-chat__username">Max Born</span></a>' +
-                    '<span class="kt-chat__datetime">Just now</span>' +
-                '</div>' +
-                '<div class="kt-chat__text kt-bg-light-success">' +
-                'Right before vacation season we have the next Big Deal for you. <br>Book the car of your dreams and save up to <b>25%*</b> worldwide.' +
-                '</div>';
-
-            KTUtil.setHTML(node, html);
-            messagesEl.appendChild(node);
-            textarea.value = '';
-            scrollEl.scrollTop = parseInt(KTUtil.css(messagesEl, 'height'));
-
-            var ps;
-            if (ps = KTUtil.data(scrollEl).get('ps')) {
-                ps.update();
-            }
-        }, 2000);
-    }
-
-    // attach events
-    KTUtil.on($messageBox, '.kt-chat__input textarea', 'keydown', function(e) {
-        if (e.keyCode == 13) {
-            handleMessaging();
-            e.preventDefault();
-
-            return false;
-        }
-    });
-
-    KTUtil.on($messageBox, '.kt-chat__input .kt-chat__reply', 'click', function(e) {
-        handleMessaging();
-    });
-	
 }
 initMessageBoxScrollBar()
+
+/**
+ * handle search event
+ */
+$searchChatBoxForm.addEventListener('submit', (e) => {
+    e.preventDefault()
+    let searchName = $searchChatBoxInput.val()
+    let foundGroup = false
+    /**
+     * search group name in current chat list
+     */
+    for(let i = 0; i < $chatListItems.length;i++){
+        let groupName = $chatListItems[i].querySelector(".kt-widget__username").innerText
+        $chatListItems[i].classList.remove('et-top-chat-item')
+        if(searchName == groupName){
+            foundGroup = true
+            $searchResult.style.display = 'flex'
+            $searchName.innerText = groupName
+            $chatListItems[i].classList.add('et-top-chat-item')
+            break
+        }
+    }
+    /**
+     * if there is no group name existing, call api to search for user name
+     */
+    if(!foundGroup){
+        $.ajax({
+            url: '/user/findByName',
+            method: "POST",
+            data: { userName: searchName}
+        }).then((data) => {
+            if(data.status){
+                $searchResult.style.display = 'flex'
+                $searchName.innerText = searchName
+                $searchResult.setAttribute('partner-id', data.userId)
+                newGroup = true
+            }else{
+                $searchNotFound.style.display = 'flex'
+            }
+        })
+    }
+})
+/**
+ * hide/open search list box
+ */
+$searchChatBoxInput.bind('input', (e) => {
+    if(e.target.value == ''){
+        hideSearchListShowChatList()
+    }else{
+        hideChatListShowSearchList()
+    }
+})
+/**
+ * hide search list and show chat list 
+ */
+function hideSearchListShowChatList(){
+    newGroup = false
+    $searchChatBoxInput.val('')
+    $searchResult.removeAttribute('group-id')
+    $searchList.style.display = 'none'
+    $searchResult.style.display = 'none'
+    $searchNotFound.style.display = 'none'
+    $chatList.style.display = 'block'
+}
+/**
+ * hide chat list and show search list
+ */
+function hideChatListShowSearchList(){
+    $chatList.style.display = 'none'
+    $searchList.style.display = 'block'
+}
+
+/**
+ * handle click on found chat item event
+ */
+    
+$searchResult.addEventListener('click', () => {
+    if(newGroup){
+        let partnerId = $searchResult.getAttribute('partner-id')
+        let memberIdList = [partnerId]
+        
+        let sendData = {
+            groupName: null,
+            memberIdList: memberIdList
+        }
+
+        $.ajax({
+            url: '/group/createNewGroup',
+            method:"POST",
+            data: JSON.stringify(sendData),
+            contentType: 'application/json'
+        }).then((data) => {
+            if(data.status){
+                console.log(data.records)
+                let groupId = data.records[0].groupId
+                let groupName = $searchName.innerText
+                hideSearchListShowChatList()
+                renderMessageBox({groupId, groupName})
+            }
+        })
+    }else{
+        clickOnFoundChatItem()
+    }
+})
+/**
+ * 
+ */
+function clickOnFoundChatItem(){
+    let $topChatItem = document.querySelector(".et-top-chat-item")
+    $chatList.insertBefore($topChatItem, $chatListItems[0]);
+    /**
+     * render right message box
+     */
+    let groupId = $topChatItem.getAttribute('group-id')
+    let groupName = $topChatItem.querySelector(".kt-widget__username").innerText
+
+    hideSearchListShowChatList()
+    renderMessageBox({groupId, groupName})
+}
+/**
+ * handle send message event
+ */
+$messageForm.addEventListener('submit', (e) => {
+    e.preventDefault()
+    let messageText = $messageText.value
+    let groupId = $messageBox.getAttribute('group-id')
+
+    $.ajax({
+        url: 'message/addNewMessage',
+        method: 'POST',
+        data: { groupId, messageText, senderId: localStorage.getItem('userId') }
+    }).done((stt) => {
+        if(stt){
+            $messageText.value = ''
+            socket.emit('sendMessage', { groupId, messageText, senderId: localStorage.getItem('userId'), senderName: localStorage.getItem('userName')})
+        }
+    })
+
+    
+})
+
+/**
+ * listen to incoming message
+ */
+socket.on('incomingMessage', ({ groupId, messageText, senderId, senderName }) => {
+    let currentUserId = localStorage.getItem('userId')
+    let openedGroupId = $messageBox.getAttribute('group-id')
+    /**
+     * render incoming message in right message box (if it is currently open)
+     */
+    if(openedGroupId == groupId){
+        let $messageItem = document.createElement('div')
+        if(currentUserId != senderId){
+            $messageItem.innerHTML = `<div class="kt-chat__message">
+                                                <div class="kt-chat__user">
+                                                    <a href="#" class="kt-chat__username">${senderName}</span></a>
+                                                </div>
+                                                <div class="kt-chat__text kt-bg-light-success">
+                                                    ${messageText}
+                                                </div>
+                                            </div>` 
+        }else{
+            $messageItem.innerHTML = `<div class="kt-chat__message kt-chat__message--right">
+                                                <div class="kt-chat__user">
+                                                    <a href="#" class="kt-chat__username">Me</span></a>
+                                                </div>
+                                                <div class="kt-chat__text kt-bg-light-brand">
+                                                    ${messageText}
+                                                </div>
+                                            </div>`
+        }
+        $messageList.appendChild($messageItem) 
+        $messageScroll.scrollTop = parseInt(KTUtil.css($messageList, 'height'));
+    }
+    /**
+     * render incoming message in left box
+     */
+    document.getElementById(`et-latest-message-${groupId}`).innerText = messageText
+
+})
+
+/**
+ * listen to new group invitation
+ */
+socket.on('inviteToNewGroup', ({memberList, groupId, groupName}) => {
+    let currentUserId = parseInt(localStorage.getItem('userId'))
+    let isInvited = memberList.find(member => member.memberId == currentUserId)
+
+    if(isInvited){
+        socket.emit('joinNewGroup', { groupId }, function(){
+            console.log('ban da join vao group moi')
+
+            /**
+             * check if chat is private or group of people
+             */
+            if(groupName == null){
+                let partner = memberList.find(member => member.memberId != currentUserId)
+                groupName = partner.memberName
+            }
+            let chatItem = document.createElement('div')
+            chatItem.setAttribute('group-id', groupId)
+            chatItem.classList.add('et-top-chat-item')
+            chatItem.classList.add('et-chat-item')
+            chatItem.innerHTML =  `<div class="kt-widget__item">
+                                        <span class="kt-media kt-media--circle">
+                                            <img src="assets/media/users/300_9.jpg" alt="image">
+                                        </span>
+                                        <div class="kt-widget__info">
+                                            <div class="kt-widget__section">
+                                                <a href="#" class="kt-widget__username">${groupName}</a>
+                                                <span class="kt-badge kt-badge--success kt-badge--dot"></span>
+                                            </div>
+                                            <span class="kt-widget__desc" id="et-latest-message-${groupId}">
+                                                You have joined new chat
+                                            </span>
+                                        </div>
+                                    </div>`
+            $chatList.appendChild(chatItem)
+            $chatList.insertBefore(chatItem, $chatList.childNodes[0]);
+            chatItem.addEventListener('click', (e) => {
+                renderMessageBox({ groupId, groupName })
+            })
+    
+            userGroupChats.push(groupId)
+        })
+    }
+    
+})
+

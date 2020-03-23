@@ -5,11 +5,21 @@ const hbs = require('express-handlebars')
 const session = require('express-session')
 const bodyParser = require('body-parser')
 const cookieParser = require('cookie-parser')
+const http = require('http')
+const socketio = require('socket.io')
+const server = http.createServer(app)
+const io = socketio(server)
+const { Client } = require('pg')
+const client = new Client()
+client.connect()
 const authRouter = require('./controllers/auth/router')
 const renderUIRouter = require('./controllers/ui-render/router')
 const userRouter = require('./controllers/user/router')
 const messageRouter = require('./controllers/message/router')
+const groupChatRouter = require('./controllers/group-chat/router')
 const assetsDirectoryPath = path.join(__dirname,'..','/assets')
+const nodeModulesDirectoryPath = path.join(__dirname,'..','/node_modules')
+const { Message, User, GroupChat, Groups_Members }  = require('../src/config/sequelize')
 
 
 
@@ -17,7 +27,7 @@ const assetsDirectoryPath = path.join(__dirname,'..','/assets')
  * use assets folder
  */
 app.use(express.static(assetsDirectoryPath))
-
+app.use(express.static(nodeModulesDirectoryPath))
 /**
  * setup for express-handlebars
  */
@@ -66,6 +76,70 @@ app.use(function(req, res, next){
     }
 })
 /**
+ * create socket io connection from server side
+ */
+io.on('connection', (socket) => {
+    console.log('socket connected')
+
+
+    Groups_Members.afterBulkCreate((newGroupMembers, options) => {
+        let memberList = []
+        let groupId = newGroupMembers[0].dataValues.groupId
+        let groupName = ''
+
+        GroupChat.findOne({
+            where:{ id : groupId},
+            include: [
+                {
+                   model: User, as: "Members"
+                }
+            ]
+        }).then(group => {
+            console.log(group)
+            groupName = group.dataValues.name
+
+            let groupMembers = group.dataValues.Members
+
+            groupMembers.forEach(groupMember => {
+                memberList.push({
+                    memberId: groupMember.dataValues.id,
+                    memberName: groupMember.dataValues.name,
+                })
+            })
+    
+            socket.emit('inviteToNewGroup', { memberList, groupId, groupName })
+        })
+    })
+
+    socket.on('joinOnline', ({rooms}) => {
+        /**
+         * current user join its rooms/groups
+         */
+        rooms.forEach(room => {
+            socket.join(room)
+        })
+        /**
+         * add current user to online list
+         */
+    })
+    /**
+     * listen to join new group 
+     */
+    socket.on('joinNewGroup', ({ groupId }, cb) => {
+        socket.join(groupId)
+        cb()
+    })
+    /**
+     * listen to sendMessage event
+     */
+    socket.on('sendMessage', ({groupId, messageText, senderId, senderName}) => {
+        /**
+         * send message to people joining the room
+         */
+        io.to(groupId).emit('incomingMessage', { groupId, messageText, senderId, senderName })
+    })
+})
+/**
  * Ui render router
  */
 app.use("/", renderUIRouter)
@@ -74,7 +148,6 @@ app.use("/user", userRouter)
 
 app.use("/message", messageRouter)
 
-app.use("/", (req, res) => {
-    res.send('hihihihihi')
-})
-app.listen(process.env.PORT || 3000)
+app.use('/group', groupChatRouter)
+
+server.listen(process.env.PORT || 3000);

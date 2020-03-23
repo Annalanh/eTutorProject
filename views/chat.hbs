@@ -36,120 +36,28 @@
 													fill="#000000" fill-rule="nonzero" />
 											</g>
 										</svg></span></div>
-								<input type="text" class="form-control" placeholder="Search"
-									aria-describedby="basic-addon1">
+								<form id='et-search-chat-box-form' class="form-control">
+									<input type="text" class="form-control" id='et-search-chat-box-input'
+										placeholder="Search" aria-describedby="basic-addon1">
+								</form>
 							</div>
 						</div>
 						<div class="kt-widget kt-widget--users kt-mt-20">
 							<div class="kt-scroll kt-scroll--pull">
-								<div class="kt-widget__items">
-									<div class="kt-widget__item">
+								<div class="kt-widget__items" id="et-chat-list"></div>
+								<div class="kt-widget__items" id="et-search-list">
+									<div class="kt-widget__item" id='et-search-result'>
 										<span class="kt-media kt-media--circle">
 											<img src="assets/media/users/300_9.jpg" alt="image">
 										</span>
 										<div class="kt-widget__info">
 											<div class="kt-widget__section">
-												<a href="#" class="kt-widget__username">Matt Pears</a>
+												<a href="#" class="kt-widget__username" id='et-search-name'>Thao Gum</a>
 												<span class="kt-badge kt-badge--success kt-badge--dot"></span>
 											</div>
-											<span class="kt-widget__desc">
-												Head of Development
-											</span>
 										</div>
 									</div>
-									<div class="kt-widget__item">
-										<span class="kt-media kt-media--circle">
-											<img src="assets/media/users/100_7.jpg" alt="image">
-										</span>
-										<div class="kt-widget__info">
-											<div class="kt-widget__section">
-												<a href="#" class="kt-widget__username">Charlie Stone</a>
-												<span class="kt-badge kt-badge--success kt-badge--dot"></span>
-											</div>
-											<span class="kt-widget__desc">
-												Art Director
-											</span>
-										</div>
-									</div>
-									<div class="kt-widget__item">
-										<span class="kt-media kt-media--circle">
-											<img src="assets/media/users/100_12.jpg" alt="image">
-										</span>
-										<div class="kt-widget__info">
-											<div class="kt-widget__section">
-												<a href="#" class="kt-widget__username">Jason Muller</a>
-												<span class="kt-badge kt-badge--success kt-badge--dot"></span>
-											</div>
-											<span class="kt-widget__desc">
-												Python Developer
-											</span>
-										</div>
-									</div>
-									<div class="kt-widget__item">
-										<span class="kt-media kt-media--circle">
-											<img src="assets/media/users/100_4.jpg" alt="image">
-										</span>
-										<div class="kt-widget__info">
-											<div class="kt-widget__section">
-												<a href="#" class="kt-widget__username">Teresa Fox</a>
-											</div>
-											<span class="kt-widget__desc">
-												PR Executive
-											</span>
-										</div>
-									</div>
-									<div class="kt-widget__item">
-										<span class="kt-media kt-media--circle">
-											<img src="assets/media/users/100_8.jpg" alt="image">
-										</span>
-										<div class="kt-widget__info">
-											<div class="kt-widget__section">
-												<a href="#" class="kt-widget__username">Giannis Nelson</a>
-											</div>
-											<span class="kt-widget__desc">
-												Lead Cowboy
-											</span>
-										</div>
-									</div>
-									<div class="kt-widget__item">
-										<span class="kt-media kt-media--circle">
-											<img src="assets/media/users/300_10.jpg" alt="image">
-										</span>
-										<div class="kt-widget__info">
-											<div class="kt-widget__section">
-												<a href="#" class="kt-widget__username">Lisa Moss</a>
-											</div>
-											<span class="kt-widget__desc">
-												QA Manager
-											</span>
-										</div>
-									</div>
-									<div class="kt-widget__item">
-										<span class="kt-media kt-media--circle">
-											<img src="assets/media/users/300_13.jpg" alt="image">
-										</span>
-										<div class="kt-widget__info">
-											<div class="kt-widget__section">
-												<a href="#" class="kt-widget__username">Carles Puyol</a>
-											</div>
-											<span class="kt-widget__desc">
-												Defence Officer
-											</span>
-										</div>
-									</div>
-									<div class="kt-widget__item">
-										<span class="kt-media kt-media--circle">
-											<img src="assets/media/users/300_21.jpg" alt="image">
-										</span>
-										<div class="kt-widget__info">
-											<div class="kt-widget__section">
-												<a href="#" class="kt-widget__username">Luka Doncic</a>
-											</div>
-											<span class="kt-widget__desc">
-												Dose whatever he wants
-											</span>
-										</div>
-									</div>
+									<div id = "et-search-not-found">No user found</div>
 								</div>
 							</div>
 						</div>
@@ -164,13 +72,21 @@
 			<!--Begin:: App Content-->
 			<div class="kt-grid__item kt-grid__item--fluid kt-app__content" id="kt_chat_content">
 				<div class="kt-chat">
-					<div class="kt-portlet kt-portlet--head-lg kt-portlet--last">
+					<div class="kt-portlet kt-portlet--head-lg kt-portlet--last" id='et-message-box'>
 						<div class="kt-portlet__head">
 							<div class="kt-chat__head ">
-								<div class="kt-chat__left"></div>
+								<div class="kt-chat__left">
+									<!--begin:: Aside Mobile Toggle -->
+									<button type="button"
+										class="btn btn-clean btn-sm btn-icon btn-icon-md kt-hidden-desktop"
+										id="kt_chat_aside_mobile_toggle">
+										<i class="flaticon2-open-text-book"></i>
+									</button>
+									<!--end:: Aside Mobile Toggle-->
+								</div>
 								<div class="kt-chat__center">
 									<div class="kt-chat__label">
-										<a href="#" class="kt-chat__title">Jason Muller</a>
+										<a href="#" class="kt-chat__title" id='et-group-name'></a>
 										<span class="kt-chat__status">
 											<span class="kt-badge kt-badge--dot kt-badge--success"></span> Active
 										</span>
@@ -225,91 +141,25 @@
 						</div>
 						<div class="kt-portlet__body">
 							<div class="kt-scroll kt-scroll--pull" data-mobile-height="300">
-								<div class="kt-chat__messages">
-									<div class="kt-chat__message">
-										<div class="kt-chat__user">
-											<a href="#" class="kt-chat__username">Jason Muller</span></a>
-										</div>
-										<div class="kt-chat__text kt-bg-light-success">
-											How likely are you to recommend our company <br>to your friends and family?
-										</div>
-									</div>
-									<div class="kt-chat__message kt-chat__message--right">
-										<div class="kt-chat__user">
-											<a href="#" class="kt-chat__username">You</span></a>
-										</div>
-										<div class="kt-chat__text kt-bg-light-brand">
-											Hey there, we’re just writing to let you know <br>that you’ve been
-											subscribed to a repository on GitHub.
-										</div>
-									</div>
-									<div class="kt-chat__message">
-										<div class="kt-chat__user">
-											<a href="#" class="kt-chat__username">Jason Muller</span></a>
-										</div>
-										<div class="kt-chat__text kt-bg-light-success">
-											Ok, Understood!
-										</div>
-									</div>
-									<div class="kt-chat__message kt-chat__message--right">
-										<div class="kt-chat__user">
-											<a href="#" class="kt-chat__username">You</span></a>
-										</div>
-										<div class="kt-chat__text kt-bg-light-brand">
-											You’ll receive notifications for all issues, pull requests!
-										</div>
-									</div>
-									<div class="kt-chat__message">
-										<div class="kt-chat__user">
-											<a href="#" class="kt-chat__username">Jason Muller</span></a>
-										</div>
-										<div class="kt-chat__text kt-bg-light-success">
-											You were automatically <b class="kt-font-brand">subscribed</b> <br>because
-											you’ve been given access to the repository
-										</div>
-									</div>
-									<div class="kt-chat__message kt-chat__message--right">
-										<div class="kt-chat__user">
-											<a href="#" class="kt-chat__username">You</span></a>
-										</div>
-										<div class="kt-chat__text kt-bg-light-brand">
-											You can unwatch this repository immediately <br>by clicking here: <a
-												href="#" class="kt-font-bold kt-link">https://github.com</a>
-										</div>
-									</div>
-									<div class="kt-chat__message">
-										<div class="kt-chat__user">
-											<a href="#" class="kt-chat__username">Jason Muller</span></a>
-										</div>
-										<div class="kt-chat__text kt-bg-light-success">
-											Discover what students who viewed Learn Figma - UI/UX Design <br>Essential
-											Training also viewed
-										</div>
-									</div>
-									<div class="kt-chat__message kt-chat__message--right">
-										<div class="kt-chat__user">
-											<a href="#" class="kt-chat__username">You</span></a>
-										</div>
-										<div class="kt-chat__text kt-bg-light-brand">
-											Most purchased Business courses during this sale!
-										</div>
-									</div>
-								</div>
+								<div class="kt-chat__messages" id="et-message-list"></div>
 							</div>
 						</div>
 						<div class="kt-portlet__foot">
-							<div class="kt-chat__input">
-								<div class="kt-chat__editor">
-									<textarea style="height: 50px" placeholder="Type here..."></textarea>
-								</div>
-								<div class="kt-chat__toolbar">
-									<div class="kt_chat__tools"></div>
-									<div class="kt_chat__actions">
-										<button type="button"
-											class="btn btn-brand btn-md btn-upper btn-bold kt-chat__reply">reply</button>
+							<form id="et-message-form">
+								<div class="kt-chat__input">
+									<div class="kt-chat__editor">
+										<textarea style="height: 50px" placeholder="Type here..."
+											id="et-message-text"></textarea>
+									</div>
+									<div class="kt-chat__toolbar">
+										<div class="kt_chat__tools"></div>
+										<div class="kt_chat__actions">
+											<button type="submit"
+												class="btn btn-brand btn-md btn-upper btn-bold kt-chat__reply">reply</button>
+										</div>
 									</div>
 								</div>
-							</div>
+							</form>
 						</div>
 					</div>
 				</div>

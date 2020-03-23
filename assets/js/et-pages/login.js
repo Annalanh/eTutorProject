@@ -55,6 +55,9 @@ $loginForm.submit((e) => {
 	.done(function (data) {
 		KTApp.unprogress($loginFormButton);
 		if(data.status){
+			let userDetail = data.userDetail
+			localStorage.setItem('userId', userDetail.userId)
+			localStorage.setItem('userName', userDetail.userName)
 			window.location.href = "/dashboard"
 		}else{
 			showErrorMsg($loginForm, 'danger', 'Incorrect username or password. Please try again.');

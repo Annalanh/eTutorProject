@@ -1,24 +1,4 @@
-const userListFake = [
-    {
-        id: 1,
-        username: "ThaoGum",
-        password: '$2b$10$Do4IEwPZ.YGpzKCufkHoweT9dJr.azVtPD8wU.GvQxHGuQ2SSzWC6',
-        role: 1
-    },
-    {
-        id: 2,
-        username: "TuanAnh",
-        password: '$2b$10$NcngsHkUvQRR04fYF3r.veLAZjRHTGENAxiHsonQT7o6Wcxcl6DMW',
-        role: 3
-    },
-    {
-        id: 3,
-        username: "MinhThang",
-        password: '$2b$10$9Xs7SFIl5yRlL6naTkgVJu4qqvmmpCv7UMdtvRFSmB8nHFt7jPRKG',
-        role: 4
-    }
-]
-
+const { User } = require('../../config/sequelize')
 const bcrypt = require('bcrypt')
 const saltRounds = 10;
 
@@ -39,17 +19,29 @@ class Authentication {
         let username = req.body.username
         let password = req.body.password
 
-        let userFound = userListFake.find(user => user.username == username && bcrypt.compareSync(password, user.password))
-
-        if (userFound) {
-            req.session.user = {
-                userId: userFound.id,
-                roleId: userFound.role
+        User.findOne({
+            where:{
+                name: username,
             }
-            res.send({ status: true, message: 'succeed' })
-        } else {
-            res.send({ status: false, message: 'fail' })
-        }
+        }).then((userFound) => {
+            console.log(userFound)
+            if(userFound){
+                if(bcrypt.compareSync(password, userFound.password)){
+                    let userDetail = {
+                        userId: userFound.id,
+                        userName: userFound.name,
+                        role: userFound.role
+                    }
+                    req.session.user = userDetail
+                    res.send({ status: true, message: 'succeed', userDetail })
+                }else{
+                    res.send({ status: false, message: 'fail' })
+                }                
+            }else{
+                res.send({ status: false, message: 'fail' })
+            }
+
+        })
     }
     logout(req, res) {
         req.session.destroy(() => {

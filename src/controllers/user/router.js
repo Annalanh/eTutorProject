@@ -1,10 +1,14 @@
 const express = require('express')
 const router = express.Router()
 const userController = require("./controller")
+const { isAdminOrStaff} = require('../../utils/checkRole')
 
-router.get('/getAll', userController.getAll)
-      .get('/getOne/:id', userController.getOne)
-      .get('/add', userController.createNewUser)
+router.post('/add',isAdminOrStaff, userController.createNewUser)
+      .post('/update', userController.updateUser)
+      .post('/delete',isAdminOrStaff, userController.deleteUserById)
+      .post('/findByName', userController.findUserByName)
+      .post('/findById', userController.findUserById)
+      .get('/findAll', userController.getAllUser)
       
 
 module.exports = router
