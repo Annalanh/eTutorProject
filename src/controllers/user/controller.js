@@ -36,23 +36,18 @@ class UserController {
     }
 
     updateUser(req, res){
-        let { userName, email, password, role, userId } = req.body
+        let { userName, email, role, userId } = req.body
 
-        bcrypt.genSalt(saltRounds, function(err, salt) {
-            bcrypt.hash(password, salt, function(err, hash) {
-                User.update({
-                    name: userName,
-                    email,
-                    password: hash,
-                    role
-                }, {
-                    where: { id: userId }
-                }).then(user => {
-                    if(user[0] == 1) res.send({status: true, message:"User updated!"})
-                    else res.send({status:false, message: "Update error!"})
-                })
-            });
-        });
+        User.update({
+            name: userName,
+            email,
+            role
+        }, {
+            where: { id: userId }
+        }).then(user => {
+            if(user[0] == 1) res.send({status: true, message:"User updated!"})
+            else res.send({status:false, message: "Update error!"})
+        })
     }
 
     deleteUserById(req, res){
@@ -105,6 +100,23 @@ class UserController {
             }
         })
     }
-
+    findAllStaff(req, res){
+        User.findAll({
+            where: {
+                role: 'staff'
+            }
+        }).then(allStaff => {
+            let staffData = []
+            if(allStaff){
+                allStaff.forEach(staff => {
+                    let { id, name, email } = staff
+                    staffData.push({ id, name, email })
+                    res.send({ status: true, staffData })
+                })
+            }else{
+                res.send({status:false, message: 'No staff found!'})
+            }
+        })
+    }
 }
 module.exports = new UserController()
