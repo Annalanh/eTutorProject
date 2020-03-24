@@ -46,11 +46,10 @@ class UIRender{
         res.send('welcome to class 1605')
     }
     renderStaffManaPage(req, res){
-        
         res.render('admin-staff-mana', {
             title: 'Etutoring',
-            thisPageStyleSheets: [], 
-            thisPageScripts: [],
+            thisPageStyleSheets: ['../css/et-pages/admin-staff-mana.css'], 
+            thisPageScripts: ['../js/et-pages/admin-staff-mana.js'],
             layout: 'main'
         })
     }

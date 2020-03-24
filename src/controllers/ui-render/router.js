@@ -6,7 +6,7 @@ const { isAdmin, isStaff, isTutor, isStudent, isStudentOrTutor } = require('../.
 router.get('/dashboard', renderUIController.renderDashboardPage)
       .get('/chat', renderUIController.renderChatPage)
       .get('/class', isStudentOrTutor, renderUIController.renderClassPage)
-      .post('/staffManagement', isAdmin, renderUIController.renderStaffManaPage)
+      .get('/staffManagement', isAdmin, renderUIController.renderStaffManaPage)
       .get('/staffDashboard', isAdmin, renderUIController.renderStaffDashboardPage)
       
 
