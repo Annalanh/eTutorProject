@@ -23,8 +23,15 @@ class UserController {
                             role,
                             email
                         }).then((userCreated) => {
+                            console.log(userCreated)
+                            let newUser = {
+                                id: userCreated.dataValues.id, 
+                                username: userCreated.dataValues.name,
+                                email: userCreated.dataValues.email,
+                                role: userCreated.dataValues.role 
+                            }
                             if(userCreated){
-                                res.send({status: true, message:"User created !"})
+                                res.send({status: true, message:"User created !", newUser})
                             }else{
                                 res.send({status: false, message:"Cannot create user!"})
                             }
@@ -111,8 +118,9 @@ class UserController {
                 allStaff.forEach(staff => {
                     let { id, name, email } = staff
                     staffData.push({ id, name, email })
-                    res.send({ status: true, staffData })
+                    
                 })
+                res.send({ status: true, staffData })
             }else{
                 res.send({status:false, message: 'No staff found!'})
             }
