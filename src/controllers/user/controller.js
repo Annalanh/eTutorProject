@@ -23,7 +23,6 @@ class UserController {
                             role,
                             email
                         }).then((userCreated) => {
-                            console.log(userCreated)
                             let newUser = {
                                 id: userCreated.dataValues.id, 
                                 username: userCreated.dataValues.name,

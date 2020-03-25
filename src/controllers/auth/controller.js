@@ -24,7 +24,6 @@ class Authentication {
                 name: username,
             }
         }).then((userFound) => {
-            console.log(userFound)
             if(userFound){
                 if(bcrypt.compareSync(password, userFound.password)){
                     let userDetail = {
