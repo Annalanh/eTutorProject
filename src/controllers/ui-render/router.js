@@ -8,6 +8,9 @@ router.get('/dashboard', renderUIController.renderDashboardPage)
       .get('/class', isStudentOrTutor, renderUIController.renderClassPage)
       .get('/staffManagement', isAdmin, renderUIController.renderStaffManaPage)
       .get('/staffDashboard', isAdmin, renderUIController.renderStaffDashboardPage)
+      .get('/studentManagement', isStaff, renderUIController.renderStudentManaPage)
+      .get('/classManagement', isStaff, renderUIController.renderClassManaPage)
+      .get('/class/studentManagement/', isStaff, renderUIController.renderClassStudentManaPage)
       
 
 module.exports = router

@@ -13,7 +13,7 @@ class UIRender{
             res.render('staff-dashboard', {
                 title: 'Etutoring',
                 thisPageStyleSheets: [], 
-                thisPageScripts: [],
+                thisPageScripts: ['../js/et-pages/staff-dashboard.js'],
                 layout: 'main'
             })
         }else if(currentUserRole == 'tutor'){
@@ -58,6 +58,30 @@ class UIRender{
             title: 'Etutoring',
             thisPageStyleSheets: [], 
             thisPageScripts: [],
+            layout: 'main'
+        })
+    }
+    renderStudentManaPage(req, res) {
+        res.render('staff-student-mana', {
+            title: 'Etutoring',
+            thisPageScripts: ['../js/et-pages/staff-student-mana.js'],
+            thisPageStyleSheets: [],
+            layout: 'main'
+        })
+    }
+    renderClassManaPage(req, res){
+        res.render('staff-class-mana', {
+            title: 'Etutoring',
+            thisPageScripts: ['../js/et-pages/staff-class-mana.js'],
+            thisPageStyleSheets: [],
+            layout: 'main'
+        })
+    }
+    renderClassStudentManaPage(req, res){
+        res.render('class-student-mana', {
+            title: 'Etutoring',
+            thisPageScripts: ['../js/et-pages/class-student-mana.js'],
+            thisPageStyleSheets: [],
             layout: 'main'
         })
     }

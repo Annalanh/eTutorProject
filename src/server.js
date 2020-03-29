@@ -17,10 +17,11 @@ const renderUIRouter = require('./controllers/ui-render/router')
 const userRouter = require('./controllers/user/router')
 const messageRouter = require('./controllers/message/router')
 const groupChatRouter = require('./controllers/group-chat/router')
+const classRouter = require('./controllers/class/router')
+const emailRouter = require('./controllers/email/router')
 const assetsDirectoryPath = path.join(__dirname,'..','/assets')
 const nodeModulesDirectoryPath = path.join(__dirname,'..','/node_modules')
 const { Message, User, GroupChat, Groups_Members }  = require('../src/config/sequelize')
-
 
 
 /**
@@ -149,5 +150,9 @@ app.use("/user", userRouter)
 app.use("/message", messageRouter)
 
 app.use('/group', groupChatRouter)
+
+app.use("/class", classRouter)
+
+app.use('/email', emailRouter)
 
 server.listen(process.env.PORT || 3000);

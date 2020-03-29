@@ -9,6 +9,6 @@ router.post('/add',isAdminOrStaff, userController.createNewUser)
       .post('/findByName', userController.findUserByName)
       .post('/findById', userController.findUserById)
       .get('/findAll', userController.getAllUser)
-      
+      .post('/findByRole', userController.findUsersByRole)
 
 module.exports = router
