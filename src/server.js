@@ -18,6 +18,9 @@ const userRouter = require('./controllers/user/router')
 const messageRouter = require('./controllers/message/router')
 const groupChatRouter = require('./controllers/group-chat/router')
 const classRoomRouter = require('./controllers/class/router')
+const postRouter = require('./controllers/post/router')
+const fileRouter = require('./controllers/file/router')
+const commentRouter = require('./controllers/comment/router')
 const assetsDirectoryPath = path.join(__dirname,'..','/assets')
 const nodeModulesDirectoryPath = path.join(__dirname,'..','/node_modules')
 const { Message, User, GroupChat, Groups_Members }  = require('../src/config/sequelize')
@@ -49,7 +52,7 @@ app.set('view engine', 'hbs')
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
-
+app.use(bodyParser.urlencoded({ extended: true,limit: '50mb' }));
 /**
  * create new session each time new client connects to server and store sessionId in its cookies. 
  */
@@ -149,6 +152,12 @@ app.use("/", renderUIRouter)
 app.use("/user", userRouter)
 
 app.use("/class", classRoomRouter)
+
+app.use("/post", postRouter)
+
+app.use('/file', fileRouter)
+
+app.use('/comment', commentRouter)
 
 app.use("/message", messageRouter)
 

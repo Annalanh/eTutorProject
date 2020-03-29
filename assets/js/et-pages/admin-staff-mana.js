@@ -113,7 +113,7 @@ $addNewStaffConfirmBtn.addEventListener('click', (e) => {
     $.ajax({
         url: '/user/add',
         method: "POST",
-        data: {userName: staffUserName, password: staffPassword, role: 'staff', email:staffEmail }
+        data: {userName: staffUserName, password: staffPassword, role: 'staff', email:staffEmail, fullName: staffFullName }
     }).done((data) => {
         if(data.status){
             let {id, username, email, role} = data.newUser

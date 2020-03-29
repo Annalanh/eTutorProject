@@ -58,6 +58,7 @@ $loginForm.submit((e) => {
 			let userDetail = data.userDetail
 			localStorage.setItem('userId', userDetail.userId)
 			localStorage.setItem('userName', userDetail.userName)
+			localStorage.setItem('role', userDetail.role)
 			window.location.href = "/dashboard"
 		}else{
 			showErrorMsg($loginForm, 'danger', 'Incorrect username or password. Please try again.');

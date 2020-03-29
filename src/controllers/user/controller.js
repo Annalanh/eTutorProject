@@ -5,7 +5,7 @@ const saltRounds = 10;
 
 class UserController {
     createNewUser(req, res){
-        let { userName, password, role, email } = req.body
+        let { userName, password, role, email, fullName } = req.body
 
         User.findOne({
             where: Sequelize.or(
@@ -19,6 +19,7 @@ class UserController {
                     bcrypt.hash(password, salt, function(err, hash) {
                         User.create({
                             name: userName,
+                            fullname: fullName,
                             password: hash,
                             role,
                             email

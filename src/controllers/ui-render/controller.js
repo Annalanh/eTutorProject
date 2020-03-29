@@ -20,14 +20,14 @@ class UIRender{
             res.render('tutor-dashboard', {
                 title: 'Etutoring',
                 thisPageStyleSheets: [], 
-                thisPageScripts: [],
+                thisPageScripts: ['../js/et-pages/tutor-dashboard.js'],
                 layout: 'main'
             })
         }else if(currentUserRole == 'student'){
             res.render('student-dashboard', {
                 title: 'Etutoring',
                 thisPageStyleSheets: [], 
-                thisPageScripts: [],
+                thisPageScripts: ['../js/et-pages/student-dashboard.js'],
                 layout: 'main'
             })
         }else{
@@ -59,6 +59,38 @@ class UIRender{
             thisPageStyleSheets: [], 
             thisPageScripts: [],
             layout: 'main'
+        })
+    }
+    renderClassStreamPage(req, res){
+        res.render('class-stream', {
+            title: 'Etutoring',
+            thisPageStyleSheets: ['../../css/pages/todo/todo.css'], 
+            thisPageScripts: ['../../js/et-pages/class-stream.js'],
+            layout: 'class'
+        })
+    }
+    renderClassListPage(req, res){
+        res.render('class-list', {
+            title: 'Etutoring',
+            thisPageStyleSheets: [], 
+            thisPageScripts: ['../js/et-pages/class-list.js'],
+            layout: 'main'
+        })   
+    }
+    renderManagementPage(req, res){
+        res.render('management', {
+            title: 'Etutoring',
+            thisPageStyleSheets: [], 
+            thisPageScripts: ['../js/et-pages/management.js'],
+            layout: 'main'
+        })   
+    }
+    renderClassPeoplePage(req, res){
+        res.render('class-people', {
+            title: 'Etutoring',
+            thisPageStyleSheets: ['../../css/et-pages/class-people.css'], 
+            thisPageScripts: ['../../js/et-pages/class-people.js'],
+            layout: 'class'
         })
     }
 }
