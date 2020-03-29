@@ -2,3 +2,9 @@
     background-color: #5d78ff;
     color: #ffffff
 }
+#et-redirect-class-stream:hover{
+    cursor: pointer;
+}
+#et-redirect-class-people:hover{
+    cursor: pointer;
+}

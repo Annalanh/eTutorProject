@@ -2,9 +2,11 @@
  * DOM Elements
  */
 
-$notiIcon = $('#et-noti-icon')
-$chatIcon = $('#et-chat-icon')
-$signOutBtn = $('#et-signout-btn')
+const $notiIcon = $('#et-noti-icon')
+const $chatIcon = $('#et-chat-icon')
+const $signOutBtn = $('#et-signout-btn')
+const $redirectClassPeople = document.getElementById('et-redirect-class-people')
+const $redirectClassStream = document.getElementById('et-redirect-class-stream')
 
 $notiIcon.click((e) => {
     console.log('noti')
@@ -27,4 +29,11 @@ $signOutBtn.click((e) => {
             window.location.href = "http://localhost:3000/auth/login"
         }
     });
+})
+
+$redirectClassPeople.addEventListener('click', () => {
+    window.location.href = `/class/${classId}/people`
+})
+$redirectClassStream.addEventListener('click', () => {
+    window.location.href = `/class/${classId}/stream`
 })

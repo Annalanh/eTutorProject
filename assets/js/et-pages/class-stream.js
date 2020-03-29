@@ -17,6 +17,11 @@ let fileList = []
  */
 
 /**
+ * change color of navigation anchor
+ */
+$redirectClassPeople.style.color = '#959cb6'
+$redirectClassStream.style.color = '#5d78ff'
+/**
  * initially render all posts
  */
 $.ajax({

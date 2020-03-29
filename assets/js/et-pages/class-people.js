@@ -12,6 +12,11 @@ const classId = window.location.pathname.split("/")[2]
  */
 const $addPostBtn = document.getElementById('et-add-post-btn')
 $addPostBtn.style.display = 'none'
+/**
+ * change color of navigation anchor
+ */
+$redirectClassStream.style.color = '#959cb6'
+$redirectClassPeople.style.color = '#5d78ff'
 
 $.ajax({
     url: '/class/findPeopleByClassId',
