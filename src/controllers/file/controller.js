@@ -16,36 +16,38 @@ class FileController{
         form.parse(req, function(err, fields, files){
             if(err) res.send({status: false, message: "Cannot upload the files!"})
             else{
-                let uploadedFiles = files.uploadedFiles
-                let uploadedFilesLength = uploadedFiles.length
-                let fileList = []
+                if(files.uploadedFiles){
+                    let uploadedFiles = files.uploadedFiles
+                    let uploadedFilesLength = uploadedFiles.length
+                    let fileList = []
 
-                if(uploadedFilesLength == undefined){
-                    fileList.push(uploadedFiles)
-                }else{
-                    for(let i = 0; i < uploadedFilesLength; i++){
-                        fileList.push(uploadedFiles[i])
-                    }                    
+                    if(uploadedFilesLength == undefined){
+                        fileList.push(uploadedFiles)
+                    }else{
+                        for(let i = 0; i < uploadedFilesLength; i++){
+                            fileList.push(uploadedFiles[i])
+                        }                    
+                    }
+
+                    fileList.forEach(file => {
+                        let oldPath = file.path;
+                        let newPath = path.join(__dirname,'../../../',`assets/uploads/${file.name}`)
+
+                        fs.renameSync(oldPath, newPath, (err) => {
+                            if(err){
+                                console.log(err)
+                            }
+                        })
+
+                        createdFileList.push({
+                            path: `/uploads/${file.name}`,
+                            UserId: userId
+                        })
+                    })
+                    File.bulkCreate(createdFileList).then(files => {
+                        res.send({status: true, files})
+                    })
                 }
-
-                fileList.forEach(file => {
-                    let oldPath = file.path;
-                    let newPath = path.join(__dirname,'../../../',`assets/uploads/${file.name}`)
-
-                    fs.renameSync(oldPath, newPath, (err) => {
-                        if(err){
-                            console.log(err)
-                        }
-                    })
-
-                    createdFileList.push({
-                        path: `/uploads/${file.name}`,
-                        UserId: userId
-                    })
-                })
-                File.bulkCreate(createdFileList).then(files => {
-                    res.send({status: true, files})
-                })
             }
         })
     }

@@ -127,6 +127,27 @@ class UserController {
             }
         })
     }
+
+    findAllTutorAndStudent(req, res){
+        User.findAll({
+            where: Sequelize.or(
+                {role: 'tutor'},
+                {role: 'student'}
+            )
+        }).then(users => {
+            if(users){
+                users.map(function(user){
+                    delete user.dataValues.password
+                    return user
+                })
+                console.log(users)
+                res.send({ status: true, users })
+            }else{
+                res.send({ status: false, message: "No user found!" })
+            }
+        })        
+    }
+
     findUsersByRole(req, res){
         let userRole = req.body.userRole
 

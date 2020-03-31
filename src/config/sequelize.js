@@ -50,7 +50,7 @@ ClassRoom.belongsToMany(User, { as: 'Students', through: Students_ClassRooms, fo
 User.belongsToMany(ClassRoom, { through: Students_ClassRooms, foreignKey: 'studentId' })
 
 //Each meeting is for 1 class
-Meeting.belongsTo(ClassRoom)
+Meeting.belongsTo(ClassRoom, { foreignKey: 'classId' })
 ClassRoom.hasMany(Meeting, { foreignKey: 'classId' })
 
 //file registered by an user and belongs to specific class and post

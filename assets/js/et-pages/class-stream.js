@@ -16,10 +16,16 @@ let fileList = []
  * check if user is in the class. if yes allow access, if no redirect to 401 page
  */
 
+
+/**
+ * hide add post button
+ */
+$addMeetingBtn.style.display = 'none'
 /**
  * change color of navigation anchor
  */
 $redirectClassPeople.style.color = '#959cb6'
+$redirectClassMeeting.style.color = '#959cb6'
 $redirectClassStream.style.color = '#5d78ff'
 /**
  * initially render all posts
@@ -65,49 +71,56 @@ $addNewPostBtn.addEventListener('click', (e) => {
             let postUpdatedAt = postData.updatedAt
             let postAuthor = localStorage.getItem('userName')
 
-            let formData = new FormData()
+            if(fileList.length == 0){
+                //render new post to stream
+                renderPost({ postId, postTitle, postContent, postCreatedAt, postUpdatedAt, postAuthor, filesData: []})
+                //clear input data in add-new-post form 
+                clearAndHideNewPostModal()
+            }else{
+                let formData = new FormData()
 
-            fileList.forEach(file => {
-                formData.append('uploadedFiles', file)
-            })
-
-            $.ajax({
-                url: '/file/upload',
-                method: "POST",
-                data: formData,
-                processData: false,
-                contentType: false,
-            }).then(data => {
-                if (data.status) {
-                    console.log(data.files)
-                    let filesData = data.files
-
-                    filesData.map((file) => {
-                        file.ClassRoomId = classId
-                        file.PostId = postId
-                        delete file.createdAt
-                        delete file.updatedAt
-                        return file
-                    })
-
-                    $.ajax({
-                        url: '/file/updateClassIdAndPostId',
-                        method: "POST",
-                        data: JSON.stringify({ updatedFiles: filesData }),
-                        contentType: 'application/json'
-                    }).done(data => {
-                        if (data.status) {
-                            //render new post to stream
-                            renderPost({ postId, postTitle, postContent, postCreatedAt, postUpdatedAt, postAuthor, filesData })
-                            //clear input data in add-new-post form 
-                            clearAndHideNewPostModal()
-                        }
-                    })
-
-                } else {
-                    console.log(data.message)
-                }
-            })
+                fileList.forEach(file => {
+                    formData.append('uploadedFiles', file)
+                })
+    
+                $.ajax({
+                    url: '/file/upload',
+                    method: "POST",
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                }).then(data => {
+                    if (data.status) {
+                        console.log(data.files)
+                        let filesData = data.files
+    
+                        filesData.map((file) => {
+                            file.ClassRoomId = classId
+                            file.PostId = postId
+                            delete file.createdAt
+                            delete file.updatedAt
+                            return file
+                        })
+    
+                        $.ajax({
+                            url: '/file/updateClassIdAndPostId',
+                            method: "POST",
+                            data: JSON.stringify({ updatedFiles: filesData }),
+                            contentType: 'application/json'
+                        }).done(data => {
+                            if (data.status) {
+                                //render new post to stream
+                                renderPost({ postId, postTitle, postContent, postCreatedAt, postUpdatedAt, postAuthor, filesData })
+                                //clear input data in add-new-post form 
+                                clearAndHideNewPostModal()
+                            }
+                        })
+    
+                    } else {
+                        console.log(data.message)
+                    }
+                })
+            }
         } else {
             console.log(data.message)
         }

@@ -7,6 +7,9 @@ const $chatIcon = $('#et-chat-icon')
 const $signOutBtn = $('#et-signout-btn')
 const $redirectClassPeople = document.getElementById('et-redirect-class-people')
 const $redirectClassStream = document.getElementById('et-redirect-class-stream')
+const $redirectClassMeeting = document.getElementById('et-redirect-class-meeting')
+const $addMeetingBtn = document.getElementById('et-add-meeting-btn')
+const $addPostBtn = document.getElementById('et-add-post-btn')
 
 $notiIcon.click((e) => {
     console.log('noti')
@@ -36,4 +39,7 @@ $redirectClassPeople.addEventListener('click', () => {
 })
 $redirectClassStream.addEventListener('click', () => {
     window.location.href = `/class/${classId}/stream`
+})
+$redirectClassMeeting.addEventListener('click', () => {
+    window.location.href = `/class/${classId}/meeting`
 })

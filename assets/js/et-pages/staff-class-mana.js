@@ -73,7 +73,7 @@ var ClassListTable = function() {
 							</div>
 							<div class="kt-widget__footer">
 								<button type="button" class="et-update-class-btn btn btn-label-success btn-lg btn-upper" data-toggle="modal"
-								data-target="#et_modal_update" class-id="${element.id}">Update Class</button>
+								data-target="#et_modal_update" class-id="${element.id}">Update</button>
 								&nbsp;
 								<button type="button" class="et-mana-students-class-btn btn btn-label-warning btn-lg btn-upper" data-toggle="modal"
 								data-target="#et_modal_update_students" class-id="${element.id}">Students Management</button>

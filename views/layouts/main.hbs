@@ -123,22 +123,41 @@
                                         <span class="kt-menu__link-text">Blogging</span>
                                     </a>
 								</li>
-								<li class="kt-menu__section ">
-									<h4 class="kt-menu__section-text">STUDY</h4>
-									<i class="kt-menu__section-icon flaticon-more-v2"></i>
-								</li>
-								<li class="kt-menu__item  kt-menu__item--submenu" aria-haspopup="true" data-ktmenu-submenu-toggle="hover">
-                                    <a href="javascript:;" class="kt-menu__link kt-menu__toggle">
-                                        <i class="kt-menu__link-icon flaticon-web"></i>
-                                        <span class="kt-menu__link-text">Personal Tutor</span>
-                                    </a>
-								</li>
-								<li class="kt-menu__item  kt-menu__item--submenu" aria-haspopup="true" data-ktmenu-submenu-toggle="hover">
-                                    <a href="/class-list" class="kt-menu__link kt-menu__toggle">
-                                        <i class="kt-menu__link-icon flaticon-web"></i>
-                                        <span class="kt-menu__link-text">Classes</span>
-                                    </a>
-								</li>
+								<!--begin::Role-based navigation-->
+								{{#if isAdminOrStaff}}
+									<li class="kt-menu__section ">
+										<h4 class="kt-menu__section-text">Management</h4>
+										<i class="kt-menu__section-icon flaticon-more-v2"></i>
+									</li>
+									<li class="kt-menu__item  kt-menu__item--submenu" aria-haspopup="true" data-ktmenu-submenu-toggle="hover">
+										<a href="/management" class="kt-menu__link kt-menu__toggle">
+											<i class="kt-menu__link-icon flaticon-web"></i>
+											<span class="kt-menu__link-text">General</span>
+										</a>
+									</li>
+								{{/if}}
+								{{#if isTutorOrStudent}}
+									<li class="kt-menu__section ">
+										<h4 class="kt-menu__section-text">STUDY</h4>
+										<i class="kt-menu__section-icon flaticon-more-v2"></i>
+									</li>
+									{{#if isStudent }}
+										<li class="kt-menu__item  kt-menu__item--submenu" aria-haspopup="true" data-ktmenu-submenu-toggle="hover">
+											<a href="/class/3/stream" class="kt-menu__link kt-menu__toggle">
+												<i class="kt-menu__link-icon flaticon-web"></i>
+												<span class="kt-menu__link-text">Personal Tutor</span>
+											</a>
+										</li>
+									{{else}}
+									<li class="kt-menu__item  kt-menu__item--submenu" aria-haspopup="true" data-ktmenu-submenu-toggle="hover">
+										<a href="/class-list" class="kt-menu__link kt-menu__toggle">
+											<i class="kt-menu__link-icon flaticon-web"></i>
+											<span class="kt-menu__link-text">Personal Tutees</span>
+										</a>
+									</li>
+									{{/if}}
+								{{/if}}
+								<!--end::Role-based navigation-->
 							</ul>
 						</div>
 					</div>
@@ -683,12 +702,12 @@
 					<div class="kt-footer  kt-grid__item kt-grid kt-grid--desktop kt-grid--ver-desktop" id="kt_footer">
 						<div class="kt-container  kt-container--fluid ">
 							<div class="kt-footer__copyright">
-								2020&nbsp;&copy;&nbsp;<a href="http://keenthemes.com/metronic" target="_blank" class="kt-link">Keenthemes</a>
+								2020&nbsp;&copy;&nbsp;<a target="_blank" class="kt-link">Etutoring</a>
 							</div>
 							<div class="kt-footer__menu">
-								<a href="http://keenthemes.com/metronic" target="_blank" class="kt-footer__menu-link kt-link">About</a>
-								<a href="http://keenthemes.com/metronic" target="_blank" class="kt-footer__menu-link kt-link">Team</a>
-								<a href="http://keenthemes.com/metronic" target="_blank" class="kt-footer__menu-link kt-link">Contact</a>
+								<a target="_blank" class="kt-footer__menu-link kt-link">About</a>
+								<a target="_blank" class="kt-footer__menu-link kt-link">Team</a>
+								<a target="_blank" class="kt-footer__menu-link kt-link">Contact</a>
 							</div>
 						</div>
 					</div>

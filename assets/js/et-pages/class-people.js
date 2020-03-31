@@ -8,15 +8,17 @@ const $studentList = document.getElementById('et-student-list')
 const classId = window.location.pathname.split("/")[2]
 
 /**
- * hide add post button
+ * hide add post button and add meeting button
  */
-const $addPostBtn = document.getElementById('et-add-post-btn')
 $addPostBtn.style.display = 'none'
+$addMeetingBtn.style.display = 'none'
 /**
  * change color of navigation anchor
  */
 $redirectClassStream.style.color = '#959cb6'
+$redirectClassMeeting.style.color = '#959cb6'
 $redirectClassPeople.style.color = '#5d78ff'
+
 
 $.ajax({
     url: '/class/findPeopleByClassId',
