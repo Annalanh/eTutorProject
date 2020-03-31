@@ -12,6 +12,7 @@ const io = socketio(server)
 const { Client } = require('pg')
 const client = new Client()
 client.connect()
+
 const authRouter = require('./controllers/auth/router')
 const renderUIRouter = require('./controllers/ui-render/router')
 const userRouter = require('./controllers/user/router')
@@ -21,12 +22,11 @@ const classRoomRouter = require('./controllers/class/router')
 const postRouter = require('./controllers/post/router')
 const fileRouter = require('./controllers/file/router')
 const commentRouter = require('./controllers/comment/router')
+const emailRouter = require('./controllers/email/router')
+
 const assetsDirectoryPath = path.join(__dirname,'..','/assets')
 const nodeModulesDirectoryPath = path.join(__dirname,'..','/node_modules')
 const { Message, User, GroupChat, Groups_Members }  = require('../src/config/sequelize')
-
-
-
 
 /**
  * use assets folder
@@ -162,5 +162,7 @@ app.use('/comment', commentRouter)
 app.use("/message", messageRouter)
 
 app.use('/group', groupChatRouter)
+
+app.use('/email', emailRouter)
 
 server.listen(process.env.PORT || 3000);

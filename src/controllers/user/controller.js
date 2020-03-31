@@ -1,4 +1,4 @@
-const { User } = require('../../config/sequelize')
+const { User, ClassRoom } = require('../../config/sequelize')
 const { Sequelize } = require('../../config/sequelize')
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
@@ -83,6 +83,7 @@ class UserController {
     }
 
     findUserById(req, res){
+        console.log(req.body);
         User.findOne({
             where: {id: req.body.userId }
         }).then(user => {
@@ -123,6 +124,21 @@ class UserController {
                 res.send({ status: true, staffData })
             }else{
                 res.send({status:false, message: 'No staff found!'})
+            }
+        })
+    }
+    findUsersByRole(req, res){
+        let userRole = req.body.userRole
+
+        User.findAll({
+            where: {
+                role: userRole
+            }
+        }).then(users => {
+            if (users){
+                res.send({status: true, users})
+            }else{
+                res.send({status: false})
             }
         })
     }

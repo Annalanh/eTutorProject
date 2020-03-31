@@ -12,5 +12,9 @@ router.get('/dashboard', renderUIController.renderDashboardPage)
       .get('/class/:id/stream/', isStudentOrTutor, renderUIController.renderClassStreamPage)
       .get('/management', isAdminOrStaff, renderUIController.renderManagementPage)
       .get('/class/:id/people', isStudentOrTutor, renderUIController.renderClassPeoplePage)
+      .get('/studentManagement', isStaff, renderUIController.renderStudentManaPage)
+      .get('/classManagement', isStaff, renderUIController.renderClassManaPage)
+      .get('/class/studentManagement/', isStaff, renderUIController.renderClassStudentManaPage)
+      
 
 module.exports = router
