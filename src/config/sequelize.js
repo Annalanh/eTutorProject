@@ -15,8 +15,9 @@ dotenv.config();
  * database connection
  */
 
-const sequelize = new Sequelize(process.env['DB_NAME'], process.env['PG_ADMIN'], process.env['PG_PASSWORD'], {
-    host: 'localhost',
+const sequelize = new Sequelize(process.env['DB_NAME'], process.env['DB_USERNAME'], process.env['DB_PASSWORD'], {
+    host: process.env['DB_HOST'],
+    port: 5432,
     dialect: 'postgres',
     pool: {
       max: 5,
@@ -86,9 +87,18 @@ User.belongsToMany(GroupChat, {through: Groups_Members, foreignKey: 'memberId' }
 /**
  * sync database
  */
-sequelize.sync({ force: false })
+sequelize.sync({ force: true })
 .then(() => {
   console.log('Database & table created')
+  User.create({
+    name: 'admin',
+    fullname: 'admin',
+    email: 'admin@gmail.com',
+    password: '$2b$10$LfiaPWdgq7ic.VCea8T3oeWQ8Q/wI1P6G6d46p28reMI6wsXSxS5G',
+    role: 'admin'
+  }).then(user => {
+    console.log('user created:', user)
+  })
 })
 
 
