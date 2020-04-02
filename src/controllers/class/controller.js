@@ -1,6 +1,7 @@
 const { User, ClassRoom } = require('../../config/sequelize')
 class classRoomController{
     findClassRoomsByUserId(req, res){
+        console.log('requey')
         let userId = req.body.userId
         let role = req.body.role
         

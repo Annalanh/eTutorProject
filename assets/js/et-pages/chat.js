@@ -24,7 +24,7 @@ let newGroup = false;
 /**
  * Create socket io 
  */
-let socket = io()
+let socket = io.connect("/chat")
 
 /**
  * generate list of chatting users in the left chat list

@@ -75,7 +75,7 @@ $.ajax({
                                             </div>
                                             <div class="kt-widget__footer">
                                                 <button type="button" class="btn ${enterClassBtnStyle} btn-lg btn-upper et-enter-class-btn" class-id=${classId}>Enter
-                                                    class</button>
+                                                </button>
                                             </div>
                                         </div>
                                     </div>

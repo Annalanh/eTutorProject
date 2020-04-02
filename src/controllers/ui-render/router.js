@@ -4,7 +4,7 @@ const renderUIController = require("./controller")
 const { isAdmin, isStaff, isTutor, isStudent, isStudentOrTutor, isAdminOrStaff } = require('../../utils/checkRole')
 
 router.get('/dashboard', renderUIController.renderDashboardPage)
-      .get('/class-list', renderUIController.renderClassListPage)
+      .get('/my-tutees', isTutor, renderUIController.renderClassListPage)
       .get('/chat', renderUIController.renderChatPage)
       .get('/class', isStudentOrTutor, renderUIController.renderClassPage)
       .get('/staffManagement', isAdmin, renderUIController.renderStaffManaPage)

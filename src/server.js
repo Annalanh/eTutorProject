@@ -82,10 +82,11 @@ app.use(function(req, res, next){
     }
 })
 /**
- * create socket io connection from server side
+ * create socket io connection from server side (chat)
  */
-io.on('connection', (socket) => {
-    console.log('socket connected')
+let chatNS = io.of("/chat")
+chatNS.on('connection', (socket) => {
+    console.log('chat socket on')
 
 
     Groups_Members.afterBulkCreate((newGroupMembers, options) => {
@@ -142,9 +143,18 @@ io.on('connection', (socket) => {
         /**
          * send message to people joining the room
          */
-        io.to(groupId).emit('incomingMessage', { groupId, messageText, senderId, senderName })
+        chatNS.to(groupId).emit('incomingMessage', { groupId, messageText, senderId, senderName })
     })
 })
+
+/**
+ * create socket io connection from server side (notification)
+ */
+let notiNS = io.of("/notification")
+notiNS.on('connection', function(socket){
+    console.log("noti socket on")
+})
+
 /**
  * Ui render router
  */
