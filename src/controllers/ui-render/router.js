@@ -16,7 +16,7 @@ router.get('/dashboard', renderUIController.renderDashboardPage)
       .get('/userManagement', isStaff, renderUIController.renderUserManaPage)
       .get('/classManagement', isStaff, renderUIController.renderClassManaPage)
       .get('/class/studentManagement/', isStaff, renderUIController.renderClassStudentManaPage)
-
+      .get('/classManagement/studentAssignment', isStaff, renderUIController.renderStudentAssignmentPage)
       
 
 module.exports = router

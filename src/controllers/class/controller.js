@@ -1,10 +1,9 @@
 const { User, ClassRoom } = require('../../config/sequelize')
+
 class classRoomController{
     findClassRoomsByUserId(req, res){
-        console.log('requey')
         let userId = req.body.userId
         let role = req.body.role
-        
         if(role == 'staff'){
             User.findOne({
                 where: {id: userId},
@@ -193,7 +192,7 @@ class classRoomController{
                 id: studentIds
             }
         }).then(students => {
-            if (!students) res.send({status: false, mesage: 'cannot find student'})
+            if (!students) res.send({status: false, message: 'cannot find student'})
             ClassRoom.findOne({ where: { id: classId } })
                 .then((classRoom => {
                     if (!classRoom) res.send({status: false, message: 'cannot find classroom'})
@@ -228,6 +227,54 @@ class classRoomController{
                         res.send({ status: false, message: "cannot update class!" })
                     }
                 })
+            }
+        })
+    }
+
+    createClassAndAssignStudents(req, res){
+        let studentIds = [];
+        let studentNames = [];
+        let studentIdsJson = JSON.parse(req.body.studentIds)
+        let studentNamesJson = JSON.parse(req.body.studentNames)
+        for(var i = 0; i < studentIdsJson.length; i++){
+            studentIds.push(studentIdsJson[`${i}`])
+            studentNames.push(studentNamesJson[`${i}`])
+        }
+
+        let {tutorId, staffId} = req.body;
+        
+        let studentEmails = [];
+        
+        for (var i = 0; i < studentIds.length; i ++){
+            let studentName =studentNames[i]
+            let studentId = studentIds[i]
+            
+            ClassRoom.create({
+                name: studentName,
+                TutorId: tutorId,
+                StaffId: staffId
+            }).then(classCreated => {
+                User.findOne({
+                    where: {id: studentId}
+                }).then(student => {
+                    studentEmails.push(student.dataValues.email)
+                    classCreated.setStudents(student)
+                })
+            })
+        }
+        res.send({status: true, studentIds: studentIds})
+    }
+
+    deleteClassByTutorIdAndClassName(req, res){
+        let {className, tutorId} = req.body
+        ClassRoom.destroy({
+            where: { name: className, TutorId: tutorId }
+        }).then(deleted => {
+            if (deleted) {
+                res.send({ status: true, message: "student deleted!" })
+            }
+            else {
+                res.send({ status: false, message: "cannot delete this student!" })
             }
         })
     }

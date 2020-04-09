@@ -7,7 +7,9 @@ router.post('/findClassRoomsByUserId', classRoomController.findClassRoomsByUserI
       .get('/getAll', classRoomController.getAllClasses)
       .post('/add', classRoomController.createNewClass)
       .post('/delete', classRoomController.deleteClassById)
+      .post('/deleteClassByTutorIdAndClassName', classRoomController.deleteClassByTutorIdAndClassName)
       .post('/addStudents', classRoomController.addStudentsToClass)
       .post('/update', classRoomController.updateClass)
+      .post('/createClassAndAssignStudents', classRoomController.createClassAndAssignStudents)
 
 module.exports = router

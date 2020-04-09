@@ -103,5 +103,6 @@ module.exports = {
   Post,
   Comment,
   Students_ClassRooms,
-  Sequelize
+  Sequelize,
+  sequelize
 }

@@ -331,5 +331,29 @@ class UIRender{
         })
     }
 
+    renderStudentAssignmentPage(req, res) {
+        let currentUserRole = req.session.user.role
+        let isAdminOrStaff = false
+        let isTutorOrStudent = false
+        let isStudent = false
+
+        if(currentUserRole == "student") isStudent = true
+
+        if(currentUserRole == 'admin' || currentUserRole == 'staff'){
+            isAdminOrStaff = true
+        }else{
+            isTutorOrStudent = true
+        }
+        res.render('staff-class-mana-student-assign', {
+            title: 'Etutoring',
+            thisPageScripts: ['../js/et-pages/staff-class-mana-student-assign.js'],
+            thisPageStyleSheets: [],
+            isAdminOrStaff,
+            isTutorOrStudent,
+            isStudent,
+            layout: 'main'
+        })
+    }
+
 }
 module.exports = new UIRender()
