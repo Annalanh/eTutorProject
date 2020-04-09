@@ -1,16 +1,33 @@
+const { User } = require('../../config/sequelize') 
 class UIRender{
 
     renderDashboardPage(req, res){
         let currentUserRole = req.session.user.role
+        let isAdminOrStaff = false
+        let isTutorOrStudent = false
+        let isStudent = false
+        let isAdmin = false
+        let authorizedStaff = req.session.user.authorizedStaff
+
+        if(currentUserRole == "student") isStudent = true
+        if(currentUserRole == "admin")  isAdmin = true
+
+        if(currentUserRole == 'admin' || currentUserRole == 'staff'){
+            isAdminOrStaff = true
+        }else{
+            isTutorOrStudent = true
+        }
 
         if(currentUserRole == 'admin'){
             res.render('admin-dashboard', {
                 title: 'Etutoring',
                 thisPageStyleSheets: [], 
                 thisPageScripts: ['../js/et-pages/admin-dashboard.js'],
-                isAdminOrStaff: true,
-                isTutorOrStudent: false,
-                isStudent: false,
+                isAdminOrStaff,
+                isTutorOrStudent,
+                isStudent,
+                isAdmin,
+                authorizedStaff,
                 layout: 'main'
             })
         }else if(currentUserRole == 'staff'){
@@ -18,9 +35,11 @@ class UIRender{
                 title: 'Etutoring',
                 thisPageStyleSheets: [], 
                 thisPageScripts: ['../js/et-pages/staff-dashboard.js'],
-                isAdminOrStaff: true,
-                isTutorOrStudent: false,
-                isStudent: false,
+                isAdminOrStaff,
+                isTutorOrStudent,
+                isStudent,
+                isAdmin,
+                authorizedStaff,
                 layout: 'main'
             })
         }else if(currentUserRole == 'tutor'){
@@ -28,19 +47,23 @@ class UIRender{
                 title: 'Etutoring',
                 thisPageStyleSheets: [], 
                 thisPageScripts: ['../js/et-pages/tutor-dashboard.js'],
-                isAdminOrStaff: false,
-                isTutorOrStudent: true,
-                isStudent: false,
+                isAdminOrStaff,
+                isTutorOrStudent,
+                isStudent,
+                isAdmin,
+                authorizedStaff,
                 layout: 'main'
             })
         }else if(currentUserRole == 'student'){
             res.render('student-dashboard', {
                 title: 'Etutoring',
-                thisPageStyleSheets: [], 
+                thisPageStyleSheets: ['../css/et-pages/student-dashboard.css'], 
                 thisPageScripts: ['../js/et-pages/student-dashboard.js'],
-                isAdminOrStaff: false,
-                isTutorOrStudent: true,
-                isStudent: true,
+                isAdminOrStaff,
+                isTutorOrStudent,
+                isStudent,
+                isAdmin,
+                authorizedStaff,
                 layout: 'main'
             })
         }else{
@@ -53,8 +76,11 @@ class UIRender{
         let isAdminOrStaff = false
         let isTutorOrStudent = false
         let isStudent = false
+        let isAdmin = false
+        let authorizedStaff = req.session.user.authorizedStaff
 
         if(currentUserRole == "student") isStudent = true
+        if(currentUserRole == "admin")  isAdmin = true
 
         if(currentUserRole == 'admin' || currentUserRole == 'staff'){
             isAdminOrStaff = true
@@ -69,12 +95,10 @@ class UIRender{
             isAdminOrStaff,
             isTutorOrStudent,
             isStudent,
+            isAdmin,
+            authorizedStaff,
             layout: 'main'
         })
-    }
-
-    renderClassPage(req, res){
-        res.send('welcome to class 1605')
     }
 
     renderStaffManaPage(req, res){
@@ -82,8 +106,11 @@ class UIRender{
         let isAdminOrStaff = false
         let isTutorOrStudent = false
         let isStudent = false
+        let isAdmin = false
+        let authorizedStaff = req.session.user.authorizedStaff
 
         if(currentUserRole == "student") isStudent = true
+        if(currentUserRole == "admin") isAdmin = true
 
         if(currentUserRole == 'admin' || currentUserRole == 'staff'){
             isAdminOrStaff = true
@@ -98,6 +125,8 @@ class UIRender{
             isAdminOrStaff,
             isTutorOrStudent,
             isStudent,
+            isAdmin,
+            authorizedStaff,
             layout: 'main'
         })
     }
@@ -107,8 +136,11 @@ class UIRender{
         let isAdminOrStaff = false
         let isTutorOrStudent = false
         let isStudent = false
+        let isAdmin = false
+        let authorizedStaff = req.session.user.authorizedStaff
 
         if(currentUserRole == "student") isStudent = true
+        if(currentUserRole == "admin") isAdmin = true
 
         if(currentUserRole == 'admin' || currentUserRole == 'staff'){
             isAdminOrStaff = true
@@ -122,6 +154,8 @@ class UIRender{
             isAdminOrStaff,
             isTutorOrStudent,
             isStudent,
+            isAdmin,
+            authorizedStaff,
             layout: 'main'
         })
     }
@@ -131,8 +165,11 @@ class UIRender{
         let isAdminOrStaff = false
         let isTutorOrStudent = false
         let isStudent = false
+        let isAdmin = false
+        let authorizedStaff = req.session.user.authorizedStaff
 
         if(currentUserRole == "student") isStudent = true
+        if(currentUserRole == "admin") isAdmin = true
 
         if(currentUserRole == 'admin' || currentUserRole == 'staff'){
             isAdminOrStaff = true
@@ -146,6 +183,8 @@ class UIRender{
             isAdminOrStaff,
             isTutorOrStudent,
             isStudent,
+            isAdmin,
+            authorizedStaff,
             layout: 'class'
         })
     }
@@ -154,10 +193,12 @@ class UIRender{
         let currentUserRole = req.session.user.role
         let isAdminOrStaff = false
         let isTutorOrStudent = false
-
         let isStudent = false
+        let isAdmin = false
+        let authorizedStaff = req.session.user.authorizedStaff
 
         if(currentUserRole == "student") isStudent = true
+        if(currentUserRole == "admin") isAdmin = true
 
         if(currentUserRole == 'admin' || currentUserRole == 'staff'){
             isAdminOrStaff = true
@@ -171,44 +212,10 @@ class UIRender{
             isAdminOrStaff,
             isTutorOrStudent,
             isStudent,
+            isAdmin,
+            authorizedStaff,
             layout: 'main'
         })   
-    }
-
-    renderManagementPage(req, res){
-        let currentUserRole = req.session.user.role
-        let isAdminOrStaff = false
-        let isTutorOrStudent = false
-        let isStudent = false
-
-        if(currentUserRole == "student") isStudent = true
-
-        if(currentUserRole == 'admin' || currentUserRole == 'staff'){
-            isAdminOrStaff = true
-        }else{
-            isTutorOrStudent = true
-        }
-
-        if(currentUserRole == 'admin'){
-            res.render('admin-general-mana', {
-                title: 'Etutoring',
-                thisPageStyleSheets: [], 
-                thisPageScripts: ['../js/et-pages/admin-general-mana.js'],
-                isAdminOrStaff,
-                isTutorOrStudent,
-                isStudent,
-                layout: 'main'
-            })               
-        }else{
-            res.render('staff-general-mana', {
-                title: 'Etutoring',
-                thisPageStyleSheets: [], 
-                thisPageScripts: ['../js/et-pages/staff-general-mana.js'],
-                isAdminOrStaff,
-                isTutorOrStudent,
-                layout: 'main'
-            }) 
-        }
     }
 
     renderClassPeoplePage(req, res){
@@ -216,8 +223,11 @@ class UIRender{
         let isAdminOrStaff = false
         let isTutorOrStudent = false
         let isStudent = false
+        let isAdmin = false
+        let authorizedStaff = req.session.user.authorizedStaff
 
         if(currentUserRole == "student") isStudent = true
+        if(currentUserRole == "admin") isAdmin = true
 
         if(currentUserRole == 'admin' || currentUserRole == 'staff'){
             isAdminOrStaff = true
@@ -230,6 +240,8 @@ class UIRender{
             isAdminOrStaff,
             isTutorOrStudent,
             isStudent,
+            isAdmin,
+            authorizedStaff,
             thisPageScripts: ['../../js/et-pages/class-people.js'],
             layout: 'class'
         })
@@ -240,8 +252,11 @@ class UIRender{
         let isAdminOrStaff = false
         let isTutorOrStudent = false
         let isStudent = false
+        let isAdmin = false
+        let authorizedStaff = req.session.user.authorizedStaff
 
         if(currentUserRole == "student") isStudent = true
+        if(currentUserRole == "admin") isAdmin = true
 
         if(currentUserRole == 'admin' || currentUserRole == 'staff'){
             isAdminOrStaff = true
@@ -250,11 +265,13 @@ class UIRender{
         }
         res.render('class-meeting', {
             title: 'Etutoring',
-            thisPageStyleSheets: [], 
+            thisPageStyleSheets: ['../../css/et-pages/class-meeting.css'], 
             thisPageScripts: ['../../js/et-pages/class-meeting.js', '../../js/pages/crud/forms/widgets/bootstrap-datetimepicker.js'],
             isAdminOrStaff,
             isTutorOrStudent,
             isStudent,
+            isAdmin,
+            authorizedStaff,
             layout: 'class'
         })      
     }
@@ -264,8 +281,11 @@ class UIRender{
         let isAdminOrStaff = false
         let isTutorOrStudent = false
         let isStudent = false
+        let isAdmin = false
+        let authorizedStaff = req.session.user.authorizedStaff
 
         if(currentUserRole == "student") isStudent = true
+        if(currentUserRole == "admin") isAdmin = true
 
         if(currentUserRole == 'admin' || currentUserRole == 'staff'){
             isAdminOrStaff = true
@@ -279,6 +299,8 @@ class UIRender{
             isAdminOrStaff,
             isTutorOrStudent,
             isStudent,
+            isAdmin,
+            authorizedStaff,
             layout: 'main'
         })
     }
@@ -288,8 +310,11 @@ class UIRender{
         let isAdminOrStaff = false
         let isTutorOrStudent = false
         let isStudent = false
+        let isAdmin = false
+        let authorizedStaff = req.session.user.authorizedStaff
 
         if(currentUserRole == "student") isStudent = true
+        if(currentUserRole == "admin") isAdmin = true
 
         if(currentUserRole == 'admin' || currentUserRole == 'staff'){
             isAdminOrStaff = true
@@ -303,6 +328,8 @@ class UIRender{
             isAdminOrStaff,
             isTutorOrStudent,
             isStudent,
+            isAdmin,
+            authorizedStaff,
             layout: 'main'
         })
     }
@@ -312,8 +339,11 @@ class UIRender{
         let isAdminOrStaff = false
         let isTutorOrStudent = false
         let isStudent = false
+        let isAdmin = false
+        let authorizedStaff = req.session.user.authorizedStaff
 
         if(currentUserRole == "student") isStudent = true
+        if(currentUserRole == "admin") isAdmin = true
 
         if(currentUserRole == 'admin' || currentUserRole == 'staff'){
             isAdminOrStaff = true
@@ -327,6 +357,96 @@ class UIRender{
             isAdminOrStaff,
             isTutorOrStudent,
             isStudent,
+            isAdmin,
+            authorizedStaff,
+            layout: 'main'
+        })
+    }
+
+    renderOthersDashboardPage(req, res){
+        let url = req.url
+        let otherId = url.split('/')[2]
+
+        User.findOne({
+            where: { id: otherId }
+        }).then(user => {
+            if(user){
+                let role = user.role
+                let currentUserRole = req.session.user.role
+                let isAdminOrStaff = false
+                let isTutorOrStudent = false
+                let isStudent = false
+                let isAdmin = false
+                let authorizedStaff = req.session.user.authorizedStaff
+
+                if(currentUserRole == "student") isStudent = true
+                if(currentUserRole == "admin") isAdmin = true
+
+                if(currentUserRole == 'admin' || currentUserRole == 'staff'){
+                    isAdminOrStaff = true
+                }else{
+                    isTutorOrStudent = true
+                }
+
+                if(role == 'student'){
+                    res.render('other-student-dashboard', {
+                        title: 'Etutoring',
+                        thisPageStyleSheets: ['../css/et-pages/other-student-dashboard.css'], 
+                        thisPageScripts: ['../js/et-pages/other-student-dashboard.js'],
+                        isAdminOrStaff,
+                        isTutorOrStudent,
+                        isStudent,
+                        isAdmin,
+                        authorizedStaff,
+                        layout: 'main'
+                    })
+                }else if(role == 'staff'){
+                    res.render('other-staff-dashboard', {
+                        title: 'Etutoring',
+                        thisPageStyleSheets: [], 
+                        thisPageScripts: ['../js/et-pages/other-staff-dashboard.js'],
+                        isAdminOrStaff,
+                        isTutorOrStudent,
+                        isStudent,
+                        isAdmin,
+                        authorizedStaff,
+                        layout: 'main'
+                    })
+                }
+            }else{
+                res.render('401-error', {
+                    title: 'Etutoring',
+                    layout: false
+                })
+            }
+        })
+    }
+
+    renderOthersDashboardListPage(req, res){
+        let currentUserRole = req.session.user.role
+        let isAdminOrStaff = false
+        let isTutorOrStudent = false
+        let isStudent = false
+        let isAdmin = false
+        let authorizedStaff = req.session.user.authorizedStaff
+
+        if(currentUserRole == "student") isStudent = true
+        if(currentUserRole == "admin") isAdmin = true
+
+        if(currentUserRole == 'admin' || currentUserRole == 'staff'){
+            isAdminOrStaff = true
+        }else{
+            isTutorOrStudent = true
+        }
+        res.render('other-dashboards', {
+            title: 'Etutoring',
+            thisPageScripts: ['../js/et-pages/other-dashboards.js'],
+            thisPageStyleSheets: [],
+            isAdminOrStaff,
+            isTutorOrStudent,
+            isStudent,
+            isAdmin,
+            authorizedStaff,
             layout: 'main'
         })
     }

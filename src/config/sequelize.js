@@ -10,6 +10,8 @@ const groupChatModel = require('../models/GroupChat')
 const messageModel = require('../models/Message')
 const groupsMembersModel = require('../models/Groups_Members')
 const studentsClassRoomsModel = require('../models/Students_ClassRooms')
+const notificationModel = require('../models/Notification')
+const notificationsUsersModel = require('../models/Notifications_Users')
 dotenv.config();
 /**
  * database connection
@@ -38,7 +40,8 @@ const GroupChat = groupChatModel(sequelize, Sequelize)
 const Message = messageModel(sequelize, Sequelize)
 const Groups_Members = groupsMembersModel(sequelize, Sequelize)
 const Students_ClassRooms = studentsClassRoomsModel(sequelize, Sequelize)
-
+const Notification = notificationModel(sequelize, Sequelize)
+const Notifications_Users = notificationsUsersModel(sequelize, Sequelize)
 
 //ClassRoom have exactly 1 staff and 1 tutor and one staff/tutor can have many classrooms
 ClassRoom.belongsTo(User, { as: 'Tutor', foreignKey: 'TutorId' })
@@ -84,21 +87,15 @@ GroupChat.hasMany(Message)
 GroupChat.belongsToMany(User, { as: 'Members', through: Groups_Members, foreignKey: 'groupId' })
 User.belongsToMany(GroupChat, {through: Groups_Members, foreignKey: 'memberId' })
 
+//Many-to-Many association between Notification and User
+User.belongsToMany(Notification, {through: Notifications_Users, foreignKey: 'userId'})
+Notification.belongsToMany(User, {through: Notifications_Users, foreignKey: 'notificationId'})
 /**
  * sync database
  */
-sequelize.sync({ force: true })
+sequelize.sync({ force: false })
 .then(() => {
   console.log('Database & table created')
-  User.create({
-    name: 'admin',
-    fullname: 'admin',
-    email: 'admin@gmail.com',
-    password: '$2b$10$LfiaPWdgq7ic.VCea8T3oeWQ8Q/wI1P6G6d46p28reMI6wsXSxS5G',
-    role: 'admin'
-  }).then(user => {
-    console.log('user created:', user)
-  })
 })
 
 
@@ -113,5 +110,7 @@ module.exports = {
   Post,
   Comment,
   Students_ClassRooms,
+  Notification,
+  Notifications_Users,
   Sequelize
 }

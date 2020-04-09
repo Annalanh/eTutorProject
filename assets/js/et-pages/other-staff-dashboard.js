@@ -3,12 +3,13 @@ const $studentNoInteractionSevenList = document.getElementById('et-student-no-in
 const $studentNoInteractionTwentyEightList = document.getElementById('et-student-no-interaction-28-list')
 const $noTutorStats = document.getElementById('et-no-tutor-stats')
 const $pairStats = document.getElementById('et-pair-stats')
+const userId = window.location.pathname.split("/")[2]
 
 
 $.ajax({
     url: '/class/findClassRoomsByUserId',
     method: "POST",
-    data: {userId: localStorage.getItem('userId'), role: localStorage.getItem('role')}
+    data: { userId, role: 'staff'}
 }).done(classRooms => {
     $pairStats.innerText = classRooms.length
 })

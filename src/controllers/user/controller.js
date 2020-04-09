@@ -1,11 +1,12 @@
-const { User, ClassRoom } = require('../../config/sequelize')
+const { User, ClassRoom, Meeting, Message, Post, File, GroupChat } = require('../../config/sequelize')
+const { Op } = require("sequelize");
 const { Sequelize } = require('../../config/sequelize')
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
 
 class UserController {
     createNewUser(req, res){
-        let { userName, password, role, email, fullName } = req.body
+        let { userName, password, role, email, fullName, authorizedStaff, major } = req.body
 
         User.findOne({
             where: Sequelize.or(
@@ -22,7 +23,9 @@ class UserController {
                             fullname: fullName,
                             password: hash,
                             role,
-                            email
+                            email,
+                            authorizedStaff,
+                            major
                         }).then((userCreated) => {
                             let newUser = {
                                 id: userCreated.dataValues.id, 
@@ -43,12 +46,14 @@ class UserController {
     }
 
     updateUser(req, res){
-        let { userName, email, role, userId } = req.body
-
+        let { userName, email, role, userId, authorizedStaff, major } = req.body
+        
         User.update({
             name: userName,
             email,
-            role
+            role,
+            authorizedStaff,
+            major
         }, {
             where: { id: userId }
         }).then(user => {
@@ -108,6 +113,7 @@ class UserController {
             }
         })
     }
+
     findAllStaff(req, res){
         User.findAll({
             where: {
@@ -117,8 +123,8 @@ class UserController {
             let staffData = []
             if(allStaff){
                 allStaff.forEach(staff => {
-                    let { id, name, email } = staff
-                    staffData.push({ id, name, email })
+                    let { id, name, email, authorizedStaff } = staff
+                    staffData.push({ id, name, email, authorizedStaff })
                     
                 })
                 res.send({ status: true, staffData })
@@ -160,6 +166,179 @@ class UserController {
                 res.send({status: true, users})
             }else{
                 res.send({status: false})
+            }
+        })
+    }
+
+    findStudentWithNoTutor(req, res){
+        User.findAll({
+            attributes: ['id', 'name', 'fullname', 'email'],
+            where: {role: 'student'},
+            include: [
+                {
+                    model: ClassRoom
+                }
+            ]
+        }).then(students => {
+            if(students){
+                let studentsNoTutor = []
+                students.forEach(student => {
+                    if(student.ClassRooms.length == 0) studentsNoTutor.push(student)
+                })
+                res.send({ status: true, studentsNoTutor })
+            }else{
+                res.send({ status: false, message: 'Cannot get student list' })
+            }
+        })
+    }
+
+    findStudentsWithNoInteractionInSevenDays(req, res){
+        User.findAll({
+            where: { role: "student" },
+            include:[
+                {
+                    model: Message 
+                },
+                {
+                    model: Post
+                },
+                {
+                    model: ClassRoom,
+                    include: [{ model: Meeting }]
+                }
+            ],
+            order:[
+                [Message, 'createdAt', 'desc'],
+                [Post, 'createdAt', 'desc'],
+                [ClassRoom, Meeting, 'createdAt', 'desc']
+            ],
+            
+        }).then(data => {
+            res.send(data)
+        })
+    }
+
+    findMeetingsAndFilesByUserId(req, res){
+        let { userId } = req.body
+
+        User.findOne({
+            where: { id: userId },
+            include: [
+                { model: ClassRoom, include: [{ model: Meeting }, { model: File }] }
+            ],
+            order:[
+                [ClassRoom, Meeting, 'startTime', 'asc'],
+                [ClassRoom, File, 'createdAt', 'desc']
+            ]
+        }).then(user => {
+            if(user){
+                if(user.ClassRooms.length == 0){
+                    res.send({status: true, meetings: []})
+                }else{
+                    res.send({status: true, meetings: user.ClassRooms[0].Meetings, files: user.ClassRooms[0].Files })
+                }
+            }else{
+                res.send({status: false, message: 'No user found!'})
+            }
+        })
+    }
+
+    findMessagesOfPeersByUserId(req, res){
+        let userId = req.body.userId
+
+        User.findOne({
+            where: {id: userId},
+            include: [
+                {
+                    model: GroupChat, 
+                    include:[
+                        {
+                            model: Message, 
+                            where: { UserId: { [Op.not]: userId}  }
+                        }
+                    ]
+                }
+            ],
+            order: [
+                [ GroupChat, Message, 'createdAt', 'desc']
+            ]
+
+        }).then(user => {
+            if(user){
+                let messages = []
+                if(user.GroupChats.length != 0) res.send({status: true, messages: user.GroupChats[0].Messages})
+                else res.send({status: true, messages })
+            }else{
+                res.send({status:false, message:'Cannot get messages'})
+            }
+        })
+    }
+
+    findMeetingsByTutorId(req, res){
+        let userId = req.session.user.userId
+
+        User.findOne({
+            where: { id: userId },
+            include: [
+                { model: ClassRoom, as: 'TutorClass', include: [{ model: Meeting }] }
+            ],
+            order:[
+                [{model: ClassRoom, as: 'TutorClass'}, Meeting, 'startTime', 'asc'],
+            ]
+        }).then(user => {
+            if(user){
+                if(user.TutorClass.length == 0){
+                    res.send({status: true, meetings: []})
+                }else{
+                    let meetings = []
+
+                    user.TutorClass.forEach(classRoom => {
+                        meetings = meetings.concat(classRoom.Meetings)
+                    })
+                    res.send({status: true, meetings})
+                }
+            }else{
+                res.send({status: false, message: 'No user found!'})
+            }
+        })
+    }
+
+    findStudentsByTutorId(req, res){
+        let userId = req.session.user.userId
+        User.findOne({
+            where: { id: userId },
+            include: [
+                {
+                    model: ClassRoom,
+                    as: 'TutorClass',
+                    include: { model: User, as: 'Students'}
+                }
+            ]
+        }).then(user => {
+            if(user){
+                let students = []
+                user.TutorClass.forEach(classRoom => {
+                    students = students.concat(classRoom.Students)
+                })
+                res.send({status: true, students})
+            }else{
+                res.send({status: false, message: 'Cannot find students!'})
+            }
+        })
+    }
+
+    getStudentsAndStaffs(req, res){
+        User.findAll({
+            where: Sequelize.or(
+                { role: 'staff' },
+                { role: 'student'}
+            ),
+            attributes: ['id', 'name', 'fullname', 'email', 'role']
+        }).then(users => {
+            if(users){
+                res.send({ status: true, users })
+            }else{
+                res.send({status: false, message: 'Cannot find students and tutors!'})
             }
         })
     }

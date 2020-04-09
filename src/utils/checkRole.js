@@ -53,6 +53,18 @@ function isAdminOrStaff(req, res, next){
         })
     }
 }
+function isAuthorizedStaff(req, res, next){
+    let role = req.session.user.role
+    let isAuthorizedStaff = req.session.user.authorizedStaff
+    
+    if(role == 'staff' && isAuthorizedStaff == true) next()
+    else{
+        res.render('401-error', {
+            title: 'Etutoring',
+            layout: false
+        })
+    }
+}
 
 module.exports = {
     isAdmin,
@@ -60,5 +72,6 @@ module.exports = {
     isTutor,
     isStudent,
     isStudentOrTutor,
-    isAdminOrStaff
+    isAdminOrStaff,
+    isAuthorizedStaff
 }

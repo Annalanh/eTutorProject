@@ -1,95 +1,5 @@
 <div class="kt-container  kt-container--fluid  kt-grid__item kt-grid__item--fluid">
 
-	<!--begin::statistic-->
-	<div class="row" style="display: flex; justify-content: space-between">
-		<div class="kt-portlet kt-portlet--fit kt-portlet--head-noborder kt-portlet--height-fluid-half"
-			style="margin-right:20px">
-			<div class="kt-portlet__head kt-portlet__space-x">
-				<div class="kt-portlet__head-label">
-					<h3 class="kt-portlet__head-title">
-						Statistic
-					</h3>
-				</div>
-			</div>
-			<div class="kt-portlet__body kt-portlet__body--fluid">
-				<div class="kt-widget20">
-					<div class="kt-widget20__content kt-portlet__space-x">
-						<span class="kt-widget20__number kt-font-brand">5</span>
-						<span class="kt-widget20__desc">Average messages</span>
-					</div>
-					<div class="kt-widget20__chart" style="height:130px;">
-						<div class="chartjs-size-monitor">
-							<div class="chartjs-size-monitor-expand">
-								<div class=""></div>
-							</div>
-							<div class="chartjs-size-monitor-shrink">
-								<div class=""></div>
-							</div>
-						</div>
-						<img src="../media/et-pages/chart1.png" style="height: 100%; width: 100%" alt="">
-					</div>
-				</div>
-			</div>
-		</div>
-		<div class="kt-portlet kt-portlet--fit kt-portlet--head-noborder kt-portlet--height-fluid-half">
-			<div class="kt-portlet__head kt-portlet__space-x">
-				<div class="kt-portlet__head-label">
-					<h3 class="kt-portlet__head-title">
-						Statistic
-					</h3>
-				</div>
-			</div>
-			<div class="kt-portlet__body kt-portlet__body--fluid">
-				<div class="kt-widget20">
-					<div class="kt-widget20__content kt-portlet__space-x">
-						<span class="kt-widget20__number kt-font-brand" id="et-student-stats"></span>
-						<span class="kt-widget20__desc">Tutees assigned to me</span>
-					</div>
-					<div class="kt-widget20__chart" style="height:130px;">
-						<div class="chartjs-size-monitor">
-							<div class="chartjs-size-monitor-expand">
-								<div class=""></div>
-							</div>
-							<div class="chartjs-size-monitor-shrink">
-								<div class=""></div>
-							</div>
-						</div>
-
-						<img src="../media/et-pages/chart2.png" alt="" style="height: 100%; width: 100%">
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-	<!--end::statistic-->
-
-	<!--begin:;Today Meetings-->
-	<div class="row">
-		<!--Begin::Portlet-->
-		<div class="kt-portlet kt-portlet--height-fluid">
-			<div class="kt-portlet__head">
-				<div class="kt-portlet__head-label">
-					<h3 class="kt-portlet__head-title">
-						Today's Meetings
-					</h3>
-				</div>
-			</div>
-			<div class="kt-portlet__body">
-
-				<!--Begin::Timeline 3 -->
-				<div class="kt-timeline-v2">
-					<div class="kt-timeline-v2__items  kt-padding-top-25 kt-padding-bottom-30"
-						id="et-today-meeting-list">
-					</div>
-				</div>
-
-				<!--End::Timeline 3 -->
-			</div>
-		</div>
-		<!--End::Portlet-->
-	</div>
-	<!--end::Today Meetings-->
-
 	<!--begin::Tutee list-->
 	<div class="row">
 		<div class="kt-portlet kt-portlet--mobile et-scrollable-table">
@@ -108,7 +18,7 @@
 									fill="#000000" />
 							</g>
 						</svg>
-						My tutees
+						Tutors and students
 					</h3>
 				</div>
 			</div>
@@ -133,16 +43,15 @@
 
 								<!--begin::Filter major-->
 								<div class="col-md-4 kt-margin-b-20-tablet-and-mobile">
-									<select class="form-control kt-selectpicker custom-select" id="et-major-select-menu">
+									<select class="form-control kt-selectpicker custom-select" id="et-role-select-menu">
 										<option value="all">All</option>
-										<option value="science">Science</option>
-										<option value="art">Art</option>
-										<option value="business">Business</option>
+										<option value="staff">Staff</option>
+										<option value="student">Student</option>
 									</select>
 								</div>
 								<!--begin::Filter major-->
 								<div class="col-md-4 kt-margin-b-20-tablet-and-mobile">
-									<button type='button' class='btn btn-label-brand' id="et-filter-student-btn">Filter</button>
+									<button type='button' class='btn btn-label-brand' id="et-filter-user-btn">Filter</button>
 									<button type='button' class='btn btn-label-danger' id="et-clear-filter-btn">Clear</button>
 								</div>
 							</div>
@@ -170,12 +79,15 @@
 								<th class="kt-datatable__cell kt-datatable__cell--sort" data-field="Email">
 									<span style="width: 110px;">Email</span>
 								</th>
-								<th class="kt-datatable__cell kt-datatable__cell--sort" data-field="Major">
-									<span style="width: 110px;">Major</span>
+								<th class="kt-datatable__cell kt-datatable__cell--sort" data-field="Role">
+									<span style="width: 110px;">Role</span>
+								</th>
+                                <th class="kt-datatable__cell kt-datatable__cell--sort" data-field="Action">
+									<span style="width: 110px;">Action</span>
 								</th>
 							</tr>
 						</thead>
-						<tbody class="kt-datatable__body" id="et-my-student-list">
+						<tbody class="kt-datatable__body" id="et-staff-student-list">
 
 						</tbody>
 					</table>

@@ -20,6 +20,7 @@ const $searchInput = document.getElementById('generalSearch')
 const $editUserForm = document.getElementById('et-edit-user-form')
 const $addUserForm = document.getElementById('et-add-user-form')
 
+
 let $userListTable = document.getElementById('et-user-list-table')
 
 /**
@@ -86,6 +87,7 @@ $.ajax({
 $updateUserConfirmBtn.addEventListener('click', (e) => {
     let userId = $updateUserConfirmBtn.getAttribute('user-id')
     let userRole = ''
+    let userMajor = ''
     //check role
     let roleList = [...$editUserForm.elements.et_role]
     roleList.forEach(role => {
@@ -94,10 +96,16 @@ $updateUserConfirmBtn.addEventListener('click', (e) => {
         }
     })
 
+    //check major
+    let majorList = [...$editUserForm.elements.et_major]
+    majorList.forEach(major => {
+        if(major.checked) userMajor = major.value
+    })
+
     $.ajax({
         url: '/user/update',
         method: "POST",
-        data: {userName: $editUserNameInput.value, email: $editEmailInput.value, role: userRole, userId }
+        data: {userName: $editUserNameInput.value, email: $editEmailInput.value, role: userRole, userId, major: userMajor }
     }).then(data => {
         if(data.status){
             //hide kt_modal_4(modal for edit) and et_modal_confirm_update
@@ -122,6 +130,7 @@ $addNewUserConfirmBtn.addEventListener('click', (e) => {
     let userEmail = $addEmailInput.value
     let userPassword = $addPasswordInput.value
     let userRole = ''
+    let userMajor = ''
 
     //check role
     let roleList = [...$addUserForm.elements.et_role]
@@ -130,11 +139,16 @@ $addNewUserConfirmBtn.addEventListener('click', (e) => {
             userRole = role.value
         }
     })
+    //check major
+    let majorList = [...$addUserForm.elements.et_major]
+    majorList.forEach(major => {
+        if(major.checked) userMajor = major.value
+    })
 
     $.ajax({
         url: '/user/add',
         method: "POST",
-        data: {userName: userUserName, password: userPassword, role: userRole, email:userEmail, fullName: userFullName }
+        data: {userName: userUserName, password: userPassword, role: userRole, email:userEmail, fullName: userFullName, major: userMajor }
     }).done((data) => {
         if(data.status){
             let { id, username, email, role } = data.newUser
@@ -257,9 +271,6 @@ function addUserInTable({ id, username, email, role }){
         $deleteUserBtn.setAttribute('user-id', id)
     })
 }
-
-
-
 
 /**
  * clear inputs in add modal (et_modal_create)

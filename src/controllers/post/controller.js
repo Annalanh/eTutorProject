@@ -24,7 +24,8 @@ class PostController {
 
         Post.findAll({
             where: { ClassRoomId: classId },
-            include: [{ model: User }, { model: Comment, include: [{ model: User }] }, {model: File}]
+            include: [{ model: User }, { model: Comment, include: [{ model: User }] }, {model: File}],
+            order: [['createdAt', 'ASC']]
         }).then(posts => {
             let postsDetail = []
 

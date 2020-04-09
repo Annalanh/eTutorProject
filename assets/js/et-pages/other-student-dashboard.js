@@ -4,6 +4,7 @@
 const $todayMeetingList = document.getElementById('et-today-meeting-list')
 const $tutorRecentMessageList = document.getElementById('et-tutor-recent-message-list')
 const $sharedFileList = document.getElementById('et-shared-file-list')
+const userId = window.location.pathname.split("/")[2]
 
 /**
  * initially render today's meetings and shared files
@@ -12,7 +13,7 @@ const $sharedFileList = document.getElementById('et-shared-file-list')
 $.ajax({
     url: '/user/findMeetingsAndFilesByUserId',
     method: 'POST',
-    data: { userId: localStorage.getItem('userId')}
+    data: { userId }
 }).done(data => {
     if(data.status){
         //render meetings
@@ -109,7 +110,7 @@ function renderSharedFiles({ container, fileData }){
 $.ajax({
     url:'/user/findMessagesOfPeersByUserId',
     method: "POST",
-    data: {userId: localStorage.getItem('userId')}
+    data: { userId }
 }).done(data => {
     if(data.status){
         let messages = data.messages

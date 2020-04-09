@@ -24,10 +24,11 @@ const fileRouter = require('./controllers/file/router')
 const commentRouter = require('./controllers/comment/router')
 const emailRouter = require('./controllers/email/router')
 const meetingRouter = require('./controllers/meeting/router')
+const notificationRouter = require('./controllers/notification/router')
 
 const assetsDirectoryPath = path.join(__dirname,'..','/assets')
 const nodeModulesDirectoryPath = path.join(__dirname,'..','/node_modules')
-const { Message, User, GroupChat, Groups_Members }  = require('../src/config/sequelize')
+const { Message, User, GroupChat, Groups_Members, Meeting, ClassRoom }  = require('../src/config/sequelize')
 
 /**
  * use assets folder
@@ -151,9 +152,59 @@ chatNS.on('connection', (socket) => {
  * create socket io connection from server side (notification)
  */
 let notiNS = io.of("/notification")
-notiNS.on('connection', function(socket){
-    console.log("noti socket on")
+notiNS.on('connection', function(socket) {
+    Meeting.afterCreate((newMeeting, options) => {
+        let meetingName = newMeeting.name
+        let classId = newMeeting.classId
+        let tutorConfirmed = newMeeting.tutorConfirmed
+
+        let creatorRole = ''
+        if(tutorConfirmed) creatorRole = 'tutor'
+        else creatorRole = 'student'
+
+        ClassRoom.findOne({
+            where: { id: classId },
+            include: [
+                { model: User, as: 'Students'},
+                { model: User, as: 'Tutor'}
+            ]
+        }).then(classRoom => {
+            socket.emit('needConfirmMeeting', { 
+                tutorId: classRoom.Tutor.id,
+                tutorName: classRoom.Tutor.name,
+                studentId: classRoom.Students[0].id,
+                studentName: classRoom.Students[0].name,
+                creatorRole,
+                classId,
+                meetingName
+            })
+        })
+    })
+
+    Meeting.afterBulkUpdate((updated, options) => {
+        let meetingId = parseInt(updated.where.id)
+
+        Meeting.findOne({
+            where: {id : meetingId},
+            include: { 
+                model: ClassRoom,
+                include: [{ model: User, as: 'Tutor'}, { model: User, as: 'Students' }] 
+            }
+        }).then(meeting => {
+            let meetingName = meeting.name
+            let classId = meeting.classId
+            
+            socket.emit('confirmedMeeting', { 
+                tutorId: meeting.ClassRoom.Tutor.id,
+                studentId: meeting.ClassRoom.Students[0].id,
+                classId,
+                meetingName
+            })
+        })
+    })
+    
 })
+
 
 /**
  * Ui render router
@@ -177,5 +228,7 @@ app.use('/group', groupChatRouter)
 app.use('/email', emailRouter)
 
 app.use('/meeting', meetingRouter)
+
+app.use('/notification', notificationRouter)
 
 server.listen(process.env.PORT || 3000);

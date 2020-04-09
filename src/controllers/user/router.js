@@ -12,5 +12,12 @@ router.post('/add',isAdminOrStaff, userController.createNewUser)
       .get('/findAllStaff', userController.findAllStaff)
       .get('/findAllTutorAndStudent', userController.findAllTutorAndStudent)
       .post('/findByRole', userController.findUsersByRole)
+      .get('/findStudentWithNoTutor', userController.findStudentWithNoTutor)
+      .get('/findStudentsWithNoInteractionInSevenDays', userController.findStudentsWithNoInteractionInSevenDays)
+      .post('/findMeetingsAndFilesByUserId', userController.findMeetingsAndFilesByUserId)
+      .post('/findMessagesOfPeersByUserId', userController.findMessagesOfPeersByUserId)
+      .get('/findMeetingsByTutorId', userController.findMeetingsByTutorId)
+      .get('/findStudentsByTutorId', userController.findStudentsByTutorId)
+      .get('/getStudentsAndStaffs', userController.getStudentsAndStaffs)
 
 module.exports = router
