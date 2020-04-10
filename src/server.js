@@ -204,8 +204,37 @@ notiNS.on('connection', function(socket) {
     })
     
 })
+/**
+ * create socket io connection from server side(call request)
+ */
+let callNotiNS = io.of("/callNoti")
+callNotiNS.on('connection', function(socket){
+    console.log('call request on')
+    
+    socket.on('startACall', ({ userId }) => {
+        socket.broadcast.emit('joinACall', { userId })
+    })
 
+    socket.on('cancelCall', ({ userId }) => {
+        socket.broadcast.emit('canceledCall', { userId })
+    })
 
+    socket.on('declineCall', ({ userId }) => {
+        socket.broadcast.emit('declinedCall', { userId })
+    })
+    socket.on('acceptCall', ({ userId }) => {
+        socket.broadcast.emit('acceptedCall', { userId })
+    })
+}) 
+/**
+ * create socket io connection from server side(calling connection)
+ */
+let callingNS = io.of("/calling")
+callingNS.on('connection', function(socket){
+    socket.on('joinCallRoom', ({userId}) => {
+        console.log(userId)
+    })
+}) 
 /**
  * Ui render router
  */

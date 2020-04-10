@@ -19,6 +19,7 @@ const $searchResult = document.getElementById('et-search-result')
 const $searchNotFound = document.getElementById('et-search-not-found')
 const $replyBtn = document.getElementById('et-reply-btn')
 const $chatListItems = $chatList.childNodes
+const $callBtn = document.getElementById('et-call-btn')
 
 let userGroupChats = []
 let newGroup = false;
@@ -511,5 +512,14 @@ socket.on('inviteToNewGroup', ({memberList, groupId, groupName}) => {
         })
     }
     
+})
+
+/**
+ * handle call event
+ */
+
+$callBtn.addEventListener('click', (e) => {
+    call_noti_socket.emit('startACall', { userId: 2 })
+    showCallModal()
 })
 

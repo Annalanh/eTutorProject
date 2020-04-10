@@ -451,5 +451,14 @@ class UIRender{
         })
     }
 
+    renderCallPage(req, res){
+        res.render('call', {
+            title: 'Etutoring',
+            thisPageScripts: ['../js/et-pages/call.bundle.js'],
+            thisPageStyleSheets: [],
+            layout: 'call'
+        })
+    }
+
 }
 module.exports = new UIRender()

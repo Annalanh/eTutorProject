@@ -7,6 +7,11 @@ const $chatIcon = $('#et-chat-icon')
 const $signOutBtn = $('#et-signout-btn')
 const $personalTutorHref = document.getElementById('et-personal-tutor-href')
 const $notiList = document.getElementById('et-noti-list')
+const $answerCallModal = document.getElementById('et_answer_call_modal')
+const $callModal = document.getElementById('et_call_modal')
+const $cancelCallBtn = document.getElementById('et-cancel-call-btn')
+const $declineCallBtn = document.getElementById('et-decline-call-btn')
+const $acceptCallBtn = document.getElementById('et-accept-call-btn')
 
 /**
  * handle click Personal Tutor in asidebar
@@ -143,4 +148,105 @@ function renderNewNotification({ type, data}){
 
         $notiList.insertBefore($newNotiItem, $notiList.childNodes[0])
     }
+}
+
+
+/**
+ * call notification socket
+ */
+let call_noti_socket = io.connect("/callNoti")
+
+/**
+ * incoming call notification
+ */
+call_noti_socket.on('joinACall', ({ userId }) => {
+    if(userId == localStorage.getItem('userId')){
+        showAnswerCallModal()
+    }
+})
+
+/**
+ * stop current call
+ */
+$cancelCallBtn.addEventListener('click', () => {
+    hideCallModal()
+    call_noti_socket.emit('cancelCall', { userId: 2 })
+})
+
+/**
+ * call being canceled notification
+ */
+call_noti_socket.on('canceledCall', ({ userId }) => {
+    if(userId == localStorage.getItem('userId')){
+        hideAnswerCallModal()
+    }
+})
+/**
+ * decline incoming call
+ */
+$declineCallBtn.addEventListener('click', () => {
+    hideAnswerCallModal()
+    
+    call_noti_socket.emit('declineCall', { userId: 4 })
+})
+/**
+ * call being declined notification
+ */
+call_noti_socket.on('declinedCall', ({ userId }) => {
+    if(userId == localStorage.getItem('userId')){
+        hideCallModal()
+    }
+})
+
+/**
+ * accept incoming call 
+ */
+$acceptCallBtn.addEventListener('click', () => {
+    call_noti_socket.emit('acceptCall', { userId: 4 })
+    window.location.href = '/call'
+})
+/**
+ * call being accepted notification
+ */
+call_noti_socket.on('acceptedCall', ({ userId }) => {
+    if(userId == localStorage.getItem('userId')) window.location.href = '/call/#1'
+})
+
+function showCallModal(){
+    $callModal.style.display = 'block'
+    $callModal.classList.add('show')
+    $callModal.setAttribute('aria-modal', true)
+    addFadeShadow()
+}
+function hideCallModal(){
+    $callModal.style.display = 'none'
+    $callModal.classList.remove('show')
+    $callModal.removeAttribute('aria-modal')
+    $callModal.setAttribute('aria-hidden', true)
+    removeFadeShadow()
+}
+function showAnswerCallModal(){
+    $answerCallModal.style.display = 'block'
+    $answerCallModal.classList.add('show')
+    $answerCallModal.setAttribute('aria-modal', true) 
+    addFadeShadow()
+}
+function hideAnswerCallModal(){
+    $answerCallModal.style.display = 'none'
+    $answerCallModal.classList.remove('show')
+    $answerCallModal.removeAttribute('aria-modal')
+    $answerCallModal.setAttribute('aria-hidden', true)
+    removeFadeShadow()
+}
+function addFadeShadow(){
+    let fadeShadow = document.createElement('div')
+    fadeShadow.classList.add('modal-backdrop')
+    fadeShadow.classList.add('fade')
+    fadeShadow.classList.add('show')
+    
+    document.body.appendChild(fadeShadow)
+}
+function removeFadeShadow(){
+    let currentFadeShadows = document.getElementsByClassName('modal-backdrop')
+    document.body.removeChild(currentFadeShadows[currentFadeShadows.length - 1])
 }
