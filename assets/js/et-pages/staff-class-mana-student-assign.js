@@ -244,7 +244,6 @@ var StudentTable = function () {
                                     data: { tutorId: tutorId, staffId: staffId, studentIds: JSON.stringify(ids), studentNames: JSON.stringify(studentNames) },
                                     async: false,
                                 }).done((data) => {
-                                   
                                     window.location.reload();
                                 })
                             })
