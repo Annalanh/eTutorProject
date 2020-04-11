@@ -30,6 +30,7 @@ const assetsDirectoryPath = path.join(__dirname,'..','/assets')
 const nodeModulesDirectoryPath = path.join(__dirname,'..','/node_modules')
 const { Message, User, GroupChat, Groups_Members, Meeting, ClassRoom }  = require('../src/config/sequelize')
 
+const { getChatRoomByUserId, addNewChatRoom, editChatRoomByUserId, removeChatRoomBySocketId } = require('./utils/chat-room')
 /**
  * use assets folder
  */
@@ -209,21 +210,27 @@ notiNS.on('connection', function(socket) {
  */
 let callNotiNS = io.of("/callNoti")
 callNotiNS.on('connection', function(socket){
-    console.log('call request on')
-    
-    socket.on('startACall', ({ userId }) => {
-        socket.broadcast.emit('joinACall', { userId })
+    socket.on('startACall', ({ callerId, callerName, answererId, answererName }) => {
+        socket.broadcast.emit('joinACall', { callerId, callerName, answererId, answererName })
     })
 
-    socket.on('cancelCall', ({ userId }) => {
-        socket.broadcast.emit('canceledCall', { userId })
+    socket.on('cancelCall', ({ callerId, callerName, answererId, answererName }) => {
+        socket.broadcast.emit('canceledCall', { callerId, callerName, answererId, answererName })
     })
 
-    socket.on('declineCall', ({ userId }) => {
-        socket.broadcast.emit('declinedCall', { userId })
+    socket.on('declineCall', ({ callerId, callerName, answererId, answererName }) => {
+        socket.broadcast.emit('declinedCall', { callerId, callerName, answererId, answererName })
     })
-    socket.on('acceptCall', ({ userId }) => {
-        socket.broadcast.emit('acceptedCall', { userId })
+    socket.on('acceptCall', ({ callerId, callerName, answererId, answererName }, cb) => {
+        addNewChatRoom({ callerId, answererId })
+        cb()
+        socket.broadcast.emit('acceptedCall', { callerId, callerName, answererId, answererName })
+    })
+
+    socket.on('checkCallStatus', ({ userId }) => {
+        let chatRoom = getChatRoomByUserId(userId)
+
+        socket.emit('getMyCallStatus', { chatRoom })
     })
 }) 
 /**
@@ -231,9 +238,34 @@ callNotiNS.on('connection', function(socket){
  */
 let callingNS = io.of("/calling")
 callingNS.on('connection', function(socket){
-    socket.on('joinCallRoom', ({userId}) => {
-        console.log(userId)
+
+    socket.on('joinCallRoom', ({ userId }) => {
+        editChatRoomByUserId({ id: userId, socketId: socket.id})
     })
+
+    socket.on('sendToken', ({ myUserId, token }) => {
+        let { callerId, answererId } = getChatRoomByUserId(myUserId)
+        let userId = 0
+
+        if(myUserId == callerId) userId = answererId
+        else userId = callerId
+
+        let friendToken = token
+
+        socket.broadcast.emit('friendToken', { userId, friendToken})
+    })
+
+    socket.on('stop-call', ({ userId }, cb) => {
+        let { callerId, answererId } = getChatRoomByUserId(userId)
+        socket.broadcast.emit('stopped-call', { callerId, answererId })
+        removeChatRoomBySocketId(socket.id)
+        cb()
+    })
+
+    socket.on('disconnect', ()=> {
+        removeChatRoomBySocketId(socket.id)
+    })
+
 }) 
 /**
  * Ui render router

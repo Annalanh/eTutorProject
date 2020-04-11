@@ -15,3 +15,6 @@
 #et-search-not-found{
     display: none
 }
+#et-call-btn:hover{
+    cursor: pointer;
+}

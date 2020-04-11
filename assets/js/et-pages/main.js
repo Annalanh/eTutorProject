@@ -12,6 +12,8 @@ const $callModal = document.getElementById('et_call_modal')
 const $cancelCallBtn = document.getElementById('et-cancel-call-btn')
 const $declineCallBtn = document.getElementById('et-decline-call-btn')
 const $acceptCallBtn = document.getElementById('et-accept-call-btn')
+const $phoneRingAudio = document.getElementById('et-phone-ring-audio')
+const $incomingPhoneCallAudio = document.getElementById('et-incoming-phone-call-audio')
 
 /**
  * handle click Personal Tutor in asidebar
@@ -159,9 +161,10 @@ let call_noti_socket = io.connect("/callNoti")
 /**
  * incoming call notification
  */
-call_noti_socket.on('joinACall', ({ userId }) => {
-    if(userId == localStorage.getItem('userId')){
-        showAnswerCallModal()
+call_noti_socket.on('joinACall', ({ callerId, callerName, answererId, answererName}) => {
+    if(answererId == localStorage.getItem('userId')){
+        showAnswerCallModal({ callerName, callerId })
+        
     }
 })
 
@@ -170,14 +173,18 @@ call_noti_socket.on('joinACall', ({ userId }) => {
  */
 $cancelCallBtn.addEventListener('click', () => {
     hideCallModal()
-    call_noti_socket.emit('cancelCall', { userId: 2 })
+    let callerId = localStorage.getItem('userId')
+    let callerName = localStorage.getItem('userName')
+    let answererId = $callBtn.getAttribute('answerer-id')
+    let answererName = $callBtn.getAttribute('answerer-name')
+    call_noti_socket.emit('cancelCall', { callerId, callerName, answererId, answererName })
 })
 
 /**
  * call being canceled notification
  */
-call_noti_socket.on('canceledCall', ({ userId }) => {
-    if(userId == localStorage.getItem('userId')){
+call_noti_socket.on('canceledCall', ({ callerId, callerName, answererId, answererName }) => {
+    if(answererId == localStorage.getItem('userId')){
         hideAnswerCallModal()
     }
 })
@@ -186,14 +193,17 @@ call_noti_socket.on('canceledCall', ({ userId }) => {
  */
 $declineCallBtn.addEventListener('click', () => {
     hideAnswerCallModal()
-    
-    call_noti_socket.emit('declineCall', { userId: 4 })
+    let callerId = $answerCallModal.getAttribute('caller-id')
+    let callerName = $answerCallModal.getAttribute('caller-name')
+    let answererId = localStorage.getItem('userId')
+    let answererName = localStorage.getItem('userName')
+    call_noti_socket.emit('declineCall', { callerId, callerName, answererId, answererName })
 })
 /**
  * call being declined notification
  */
-call_noti_socket.on('declinedCall', ({ userId }) => {
-    if(userId == localStorage.getItem('userId')){
+call_noti_socket.on('declinedCall', ({ callerId, callerName, answererId, answererName }) => {
+    if(callerId == localStorage.getItem('userId')){
         hideCallModal()
     }
 })
@@ -202,21 +212,34 @@ call_noti_socket.on('declinedCall', ({ userId }) => {
  * accept incoming call 
  */
 $acceptCallBtn.addEventListener('click', () => {
-    call_noti_socket.emit('acceptCall', { userId: 4 })
-    window.location.href = '/call'
+    let callerId = $answerCallModal.getAttribute('caller-id')
+    let callerName = $answerCallModal.getAttribute('caller-name')
+    let answererId = localStorage.getItem('userId')
+    let answererName = localStorage.getItem('userName')
+    call_noti_socket.emit('acceptCall', { callerId, callerName, answererId, answererName }, () => {
+        // window.location.href = '/call'
+        hideAnswerCallModal()
+        window.open("/call"); 
+    })  
 })
 /**
  * call being accepted notification
  */
-call_noti_socket.on('acceptedCall', ({ userId }) => {
-    if(userId == localStorage.getItem('userId')) window.location.href = '/call/#1'
+call_noti_socket.on('acceptedCall', ({ callerId, callerName, answererId, answererName }) => {
+    if(callerId == localStorage.getItem('userId')) {
+        // window.location.href = '/call/#1'
+        hideCallModal()
+        window.open("/call/#1"); 
+    }
 })
 
-function showCallModal(){
+function showCallModal({ answererName}){
     $callModal.style.display = 'block'
     $callModal.classList.add('show')
     $callModal.setAttribute('aria-modal', true)
+    $callModal.querySelector('.et-calling-person-name').innerText = answererName
     addFadeShadow()
+    $phoneRingAudio.play()
 }
 function hideCallModal(){
     $callModal.style.display = 'none'
@@ -224,12 +247,17 @@ function hideCallModal(){
     $callModal.removeAttribute('aria-modal')
     $callModal.setAttribute('aria-hidden', true)
     removeFadeShadow()
+    $phoneRingAudio.load()
 }
-function showAnswerCallModal(){
+function showAnswerCallModal({ callerName, callerId }){
     $answerCallModal.style.display = 'block'
     $answerCallModal.classList.add('show')
     $answerCallModal.setAttribute('aria-modal', true) 
+    $answerCallModal.querySelector('.et-calling-person-name').innerText = callerName
+    $answerCallModal.setAttribute('caller-id', callerId)
+    $answerCallModal.setAttribute('caller-name', callerName)
     addFadeShadow()
+    $incomingPhoneCallAudio.play()
 }
 function hideAnswerCallModal(){
     $answerCallModal.style.display = 'none'
@@ -237,6 +265,7 @@ function hideAnswerCallModal(){
     $answerCallModal.removeAttribute('aria-modal')
     $answerCallModal.setAttribute('aria-hidden', true)
     removeFadeShadow()
+    $incomingPhoneCallAudio.load()
 }
 function addFadeShadow(){
     let fadeShadow = document.createElement('div')

@@ -39,6 +39,14 @@ $.ajax({
 .done(function (groups) {
     $replyBtn.disabled = true
     groups.forEach((group, index) => {
+
+        //get answererId 
+        let answererId = 0
+        let { groupMembers } = group
+        groupMembers.forEach(member => {
+            if(member.id != localStorage.getItem('userId')) answererId = member.id
+        })
+
         let chatItem = document.createElement('div')
         chatItem.setAttribute('group-id', group.groupId)
         chatItem.className = 'et-chat-item'
@@ -65,13 +73,13 @@ $.ajax({
                                 </div>`
         $chatList.appendChild(chatItem)
         chatItem.addEventListener('click', (e) => {
-            renderMessageBox({ groupId: group.groupId, groupName: group.groupName })
+            renderMessageBox({ groupId: group.groupId, groupName: group.groupName, answererId })
         })
 
         userGroupChats.push(group.groupId)
 
         if(index == 0) {
-            renderMessageBox({ groupId: group.groupId, groupName: group.groupName })
+            renderMessageBox({ groupId: group.groupId, groupName: group.groupName, answererId })
         }
     })
     /**
@@ -93,7 +101,7 @@ $messageTextJQ.bind('input', (e) => {
 /**
  * generate recent messages of current right chat 
  */
-function renderMessageBox({ groupId, groupName }){
+function renderMessageBox({ groupId, groupName, answererId }){
     $.ajax({
 		method: "POST",
 		url: "/message/messages",
@@ -101,6 +109,14 @@ function renderMessageBox({ groupId, groupName }){
 	})
 	.done(function ({ messages, currentUserId }) {
         console.log(messages)
+        /**
+         * set answerer id to call icon
+         */
+        $callBtn.setAttribute('answerer-id', answererId)
+        /**
+         * set answerer name to call icon
+         */
+        $callBtn.setAttribute('answerer-name', groupName)
         /**
          * render group name
          */
@@ -519,7 +535,28 @@ socket.on('inviteToNewGroup', ({memberList, groupId, groupName}) => {
  */
 
 $callBtn.addEventListener('click', (e) => {
-    call_noti_socket.emit('startACall', { userId: 2 })
-    showCallModal()
+    let callerId = localStorage.getItem('userId')
+    let callerName = localStorage.getItem('userName')
+    let answererId = $callBtn.getAttribute('answerer-id')
+    let answererName = $callBtn.getAttribute('answerer-name')
+    call_noti_socket.emit('startACall', { callerId, callerName, answererId, answererName })
+    showCallModal({ answererName })
+
+    setTimeout(function(){
+        call_noti_socket.emit('checkCallStatus', { userId: localStorage.getItem('userId')})
+    }, 30000)
 })
+
+call_noti_socket.on('getMyCallStatus', ({ chatRoom }) => {
+    if(chatRoom == undefined) {
+        hideCallModal()
+        let callerId = localStorage.getItem('userId')
+        let callerName = localStorage.getItem('userName')
+        let answererId = $callBtn.getAttribute('answerer-id')
+        let answererName = $callBtn.getAttribute('answerer-name')
+        call_noti_socket.emit('cancelCall', { callerId, callerName, answererId, answererName })
+    }
+})
+
+
 
