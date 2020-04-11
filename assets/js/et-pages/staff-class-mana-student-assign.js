@@ -75,8 +75,6 @@ var StudentTable = function () {
         })
     }
 
-    // const $deleteStudentBtns = document.getElementsByClassName('et-delete-student')
-
     const deleteStudentEvent = () => {
         $(document).ready(() => {
             var $deleteStudentBtns = document.getElementsByClassName('et-delete-student')
@@ -195,12 +193,12 @@ var StudentTable = function () {
         })
     }
 
-    // search
-    var search = function () {
-        $('#kt_form_status').on('change', function () {
-            datatable.search($(this).val().toLowerCase(), 'Status');
-        });
-    };
+    // // search
+    // var search = function () {
+    //     $('#kt_form_status').on('change', function () {
+    //         datatable.search($(this).val().toLowerCase(), 'Status');
+    //     });
+    // };
 
     // selected records assign
     var selectedAssign = function () {
@@ -246,15 +244,8 @@ var StudentTable = function () {
                                     data: { tutorId: tutorId, staffId: staffId, studentIds: JSON.stringify(ids), studentNames: JSON.stringify(studentNames) },
                                     async: false,
                                 }).done((data) => {
-                                    console.log(data);
-                                    $.ajax({
-                                        method: "POST",
-                                        url: '/email/sendStudentsNotiById',
-                                        data: {studentIds: data.studentIds}
-                                    }).done((result) => {
-                                        console.log(result);
-                                    })
-                                    // window.location.reload();
+                                   
+                                    window.location.reload();
                                 })
                             })
                         // result.dismiss can be 'cancel', 'overlay',

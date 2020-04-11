@@ -22,7 +22,6 @@ const classRoomRouter = require('./controllers/class/router')
 const postRouter = require('./controllers/post/router')
 const fileRouter = require('./controllers/file/router')
 const commentRouter = require('./controllers/comment/router')
-const emailRouter = require('./controllers/email/router')
 const meetingRouter = require('./controllers/meeting/router')
 
 const assetsDirectoryPath = path.join(__dirname,'..','/assets')
@@ -173,8 +172,6 @@ app.use('/comment', commentRouter)
 app.use("/message", messageRouter)
 
 app.use('/group', groupChatRouter)
-
-app.use('/email', emailRouter)
 
 app.use('/meeting', meetingRouter)
 
