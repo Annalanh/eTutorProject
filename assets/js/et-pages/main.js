@@ -164,7 +164,6 @@ let call_noti_socket = io.connect("/callNoti")
 call_noti_socket.on('joinACall', ({ callerId, callerName, answererId, answererName}) => {
     if(answererId == localStorage.getItem('userId')){
         showAnswerCallModal({ callerName, callerId })
-        
     }
 })
 
