@@ -246,15 +246,15 @@ var StudentTable = function () {
                                     data: { tutorId: tutorId, staffId: staffId, studentIds: JSON.stringify(ids), studentNames: JSON.stringify(studentNames) },
                                     async: false,
                                 }).done((data) => {
-                                    console.log(data);
-                                    $.ajax({
-                                        method: "POST",
-                                        url: '/email/sendStudentsNotiById',
-                                        data: {studentIds: data.studentIds}
-                                    }).done((result) => {
-                                        console.log(result);
-                                    })
-                                    // window.location.reload();
+//                                     console.log(data);
+//                                     $.ajax({
+//                                         method: "POST",
+//                                         url: '/email/sendStudentsNotiById',
+//                                         data: {studentIds: data.studentIds}
+//                                     }).done((result) => {
+//                                         console.log(result);
+//                                     })
+                                    window.location.reload();
                                 })
                             })
                         // result.dismiss can be 'cancel', 'overlay',
