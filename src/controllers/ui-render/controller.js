@@ -21,7 +21,7 @@ class UIRender{
         if(currentUserRole == 'admin'){
             res.render('admin-dashboard', {
                 title: 'Etutoring',
-                thisPageStyleSheets: [], 
+                thisPageStyleSheets: ['../css/et-pages/admin-dashboard.css'], 
                 thisPageScripts: ['../js/et-pages/admin-dashboard.js'],
                 isAdminOrStaff,
                 isTutorOrStudent,

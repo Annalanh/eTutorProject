@@ -1,7 +1,10 @@
 /**
  * DOM Elements
  */
-
+const $topBarUserName = document.getElementById('et-topbar-username')
+const $topBarBadgeUserName = document.getElementById('et-topbar-badge-username')
+const $topBarDropDownUserName = document.getElementById('et-topbar-dropdown-username')
+const $topBarDropDownBadgeUserName = document.getElementById('et-topbar-dropdown-badge-username')
 const $notiIcon = $('#et-noti-icon')
 const $chatIcon = $('#et-chat-icon')
 const $signOutBtn = $('#et-signout-btn')
@@ -16,6 +19,19 @@ const $answerCallModal = document.getElementById('et_answer_call_modal')
 const $declineCallBtn = document.getElementById('et-decline-call-btn')
 const $acceptCallBtn = document.getElementById('et-accept-call-btn')
 const $incomingPhoneCallAudio = document.getElementById('et-incoming-phone-call-audio')
+
+/**
+ * setup topbar username, badge and its dropdown
+ */
+function setUpTopBarUserName(){
+    let userName = localStorage.getItem('userName')
+    let firstLetter = userName.charAt(0)
+    $topBarUserName.innerText = userName
+    $topBarDropDownUserName.innerText = userName
+    $topBarBadgeUserName.innerText = firstLetter.toUpperCase()
+    $topBarDropDownBadgeUserName.innerText = firstLetter.toUpperCase()
+}
+setUpTopBarUserName()
 
 /**
  * handle click Personal Tutor in asidebar
