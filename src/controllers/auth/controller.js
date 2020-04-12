@@ -33,7 +33,8 @@ class Authentication {
                     let userDetail = {
                         userId: userFound.id,
                         userName: userFound.name,
-                        role: userFound.role
+                        role: userFound.role,
+                        authorizedStaff: userFound.authorizedStaff
                     }
                     req.session.user = userDetail
                     res.send({ status: true, message: 'succeed', userDetail })

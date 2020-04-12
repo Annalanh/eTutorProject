@@ -23,11 +23,13 @@ const postRouter = require('./controllers/post/router')
 const fileRouter = require('./controllers/file/router')
 const commentRouter = require('./controllers/comment/router')
 const meetingRouter = require('./controllers/meeting/router')
+const notificationRouter = require('./controllers/notification/router')
 
 const assetsDirectoryPath = path.join(__dirname,'..','/assets')
 const nodeModulesDirectoryPath = path.join(__dirname,'..','/node_modules')
-const { Message, User, GroupChat, Groups_Members }  = require('../src/config/sequelize')
+const { Message, User, GroupChat, Groups_Members, Meeting, ClassRoom }  = require('../src/config/sequelize')
 
+const { getChatRoomByUserId, addNewChatRoom, editChatRoomByUserId, removeChatRoomBySocketId } = require('./utils/chat-room')
 /**
  * use assets folder
  */
@@ -150,10 +152,120 @@ chatNS.on('connection', (socket) => {
  * create socket io connection from server side (notification)
  */
 let notiNS = io.of("/notification")
-notiNS.on('connection', function(socket){
-    console.log("noti socket on")
-})
+notiNS.on('connection', function(socket) {
+    Meeting.afterCreate((newMeeting, options) => {
+        let meetingName = newMeeting.name
+        let classId = newMeeting.classId
+        let tutorConfirmed = newMeeting.tutorConfirmed
 
+        let creatorRole = ''
+        if(tutorConfirmed) creatorRole = 'tutor'
+        else creatorRole = 'student'
+
+        ClassRoom.findOne({
+            where: { id: classId },
+            include: [
+                { model: User, as: 'Students'},
+                { model: User, as: 'Tutor'}
+            ]
+        }).then(classRoom => {
+            socket.emit('needConfirmMeeting', { 
+                tutorId: classRoom.Tutor.id,
+                tutorName: classRoom.Tutor.name,
+                studentId: classRoom.Students[0].id,
+                studentName: classRoom.Students[0].name,
+                creatorRole,
+                classId,
+                meetingName
+            })
+        })
+    })
+
+    Meeting.afterBulkUpdate((updated, options) => {
+        let meetingId = parseInt(updated.where.id)
+
+        Meeting.findOne({
+            where: {id : meetingId},
+            include: { 
+                model: ClassRoom,
+                include: [{ model: User, as: 'Tutor'}, { model: User, as: 'Students' }] 
+            }
+        }).then(meeting => {
+            let meetingName = meeting.name
+            let classId = meeting.classId
+            
+            socket.emit('confirmedMeeting', { 
+                tutorId: meeting.ClassRoom.Tutor.id,
+                studentId: meeting.ClassRoom.Students[0].id,
+                classId,
+                meetingName
+            })
+        })
+    })
+    
+})
+/**
+ * create socket io connection from server side(call request)
+ */
+let callNotiNS = io.of("/callNoti")
+callNotiNS.on('connection', function(socket){
+    socket.on('startACall', ({ callerId, callerName, answererId, answererName }) => {
+        socket.broadcast.emit('joinACall', { callerId, callerName, answererId, answererName })
+    })
+
+    socket.on('cancelCall', ({ callerId, callerName, answererId, answererName }) => {
+        socket.broadcast.emit('canceledCall', { callerId, callerName, answererId, answererName })
+    })
+
+    socket.on('declineCall', ({ callerId, callerName, answererId, answererName }) => {
+        socket.broadcast.emit('declinedCall', { callerId, callerName, answererId, answererName })
+    })
+    socket.on('acceptCall', ({ callerId, callerName, answererId, answererName }, cb) => {
+        addNewChatRoom({ callerId, answererId })
+        cb()
+        socket.broadcast.emit('acceptedCall', { callerId, callerName, answererId, answererName })
+    })
+
+    socket.on('checkCallStatus', ({ userId }) => {
+        let chatRoom = getChatRoomByUserId(userId)
+
+        socket.emit('getMyCallStatus', { chatRoom })
+    })
+}) 
+/**
+ * create socket io connection from server side(calling connection)
+ */
+let callingNS = io.of("/calling")
+callingNS.on('connection', function(socket){
+
+    socket.on('joinCallRoom', ({ userId }) => {
+        editChatRoomByUserId({ id: userId, socketId: socket.id})
+    })
+
+    socket.on('sendToken', ({ myUserId, token }) => {
+        let { callerId, answererId } = getChatRoomByUserId(myUserId)
+        let userId = 0
+
+        if(myUserId == callerId) userId = answererId
+        else userId = callerId
+
+        let friendToken = token
+
+        socket.broadcast.emit('friendToken', { userId, friendToken})
+    })
+
+    socket.on('stop-call', ({ userId }, cb) => {
+        let { callerId, answererId } = getChatRoomByUserId(userId)
+        socket.broadcast.emit('stopped-call', { callerId, answererId })
+        removeChatRoomBySocketId(socket.id)
+        cb()
+    })
+
+    socket.on('disconnect', ()=> {
+        removeChatRoomBySocketId(socket.id)
+    })
+
+}) 
 /**
  * Ui render router
  */
@@ -174,5 +286,7 @@ app.use("/message", messageRouter)
 app.use('/group', groupChatRouter)
 
 app.use('/meeting', meetingRouter)
+
+app.use('/notification', notificationRouter)
 
 server.listen(process.env.PORT || 3000);

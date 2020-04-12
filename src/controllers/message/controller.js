@@ -40,7 +40,7 @@ class MessageController{
 
             if(groupChats.length != 0){
                 groupChats.forEach(group => {
-                    let detailedGroupChat = {groupId: group.id}
+                    let detailedGroupChat = {groupId: group.id, groupMembers: group.Members}
                     if(group.name == null){
                         let partner = group.Members.find(member => member.dataValues.id != currentUserId)
                         detailedGroupChat.groupName = partner.dataValues.name

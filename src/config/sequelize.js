@@ -10,13 +10,16 @@ const groupChatModel = require('../models/GroupChat')
 const messageModel = require('../models/Message')
 const groupsMembersModel = require('../models/Groups_Members')
 const studentsClassRoomsModel = require('../models/Students_ClassRooms')
+const notificationModel = require('../models/Notification')
+const notificationsUsersModel = require('../models/Notifications_Users')
 dotenv.config();
 /**
  * database connection
  */
 
-const sequelize = new Sequelize(process.env['DB_NAME'], process.env['PG_ADMIN'], process.env['PG_PASSWORD'], {
-    host: 'localhost',
+const sequelize = new Sequelize(process.env['DB_NAME'], process.env['DB_USERNAME'], process.env['DB_PASSWORD'], {
+    host: process.env['DB_HOST'],
+    port: 5432,
     dialect: 'postgres',
     pool: {
       max: 5,
@@ -37,7 +40,8 @@ const GroupChat = groupChatModel(sequelize, Sequelize)
 const Message = messageModel(sequelize, Sequelize)
 const Groups_Members = groupsMembersModel(sequelize, Sequelize)
 const Students_ClassRooms = studentsClassRoomsModel(sequelize, Sequelize)
-
+const Notification = notificationModel(sequelize, Sequelize)
+const Notifications_Users = notificationsUsersModel(sequelize, Sequelize)
 
 //ClassRoom have exactly 1 staff and 1 tutor and one staff/tutor can have many classrooms
 ClassRoom.belongsTo(User, { as: 'Tutor', foreignKey: 'TutorId' })
@@ -83,10 +87,13 @@ GroupChat.hasMany(Message)
 GroupChat.belongsToMany(User, { as: 'Members', through: Groups_Members, foreignKey: 'groupId' })
 User.belongsToMany(GroupChat, {through: Groups_Members, foreignKey: 'memberId' })
 
+//Many-to-Many association between Notification and User
+User.belongsToMany(Notification, {through: Notifications_Users, foreignKey: 'userId'})
+Notification.belongsToMany(User, {through: Notifications_Users, foreignKey: 'notificationId'})
 /**
  * sync database
  */
-sequelize.sync({ force: true })
+sequelize.sync({ force: false })
 .then(() => {
   console.log('Database & table created')
 })
@@ -103,6 +110,7 @@ module.exports = {
   Post,
   Comment,
   Students_ClassRooms,
-  Sequelize,
-  sequelize
+  Notification,
+  Notifications_Users,
+  Sequelize
 }

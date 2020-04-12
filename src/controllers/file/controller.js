@@ -6,7 +6,7 @@ const path = require('path')
 
 class FileController{
     getFile(req, res){
-        res.send({path: "http://localhost:3000/uploads/CTest.docx"})
+        res.send({path: "/uploads/CTest.docx"})
     }
     upload(req, res){
         let userId = req.session.user.userId
