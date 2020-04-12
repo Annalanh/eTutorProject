@@ -112,5 +112,6 @@ module.exports = {
   Students_ClassRooms,
   Notification,
   Notifications_Users,
-  Sequelize
+  Sequelize,
+  sequelize
 }

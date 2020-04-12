@@ -363,6 +363,35 @@ class UIRender{
         })
     }
 
+    renderStudentAssignmentPage(req, res) {
+        let currentUserRole = req.session.user.role
+        let isAdminOrStaff = false
+        let isTutorOrStudent = false
+        let isStudent = false
+        let isAdmin = false
+        let authorizedStaff = req.session.user.authorizedStaff
+
+        if(currentUserRole == "student") isStudent = true
+        if(currentUserRole == "admin") isAdmin = true
+
+        if(currentUserRole == 'admin' || currentUserRole == 'staff'){
+            isAdminOrStaff = true
+        }else{
+            isTutorOrStudent = true
+        }
+        res.render('staff-class-mana-student-assign', {
+            title: 'Etutoring',
+            thisPageScripts: ['../js/et-pages/staff-class-mana-student-assign.js'],
+            thisPageStyleSheets: [],
+            isAdminOrStaff,
+            isTutorOrStudent,
+            isStudent,
+            isAdmin,
+            authorizedStaff,
+            layout: 'main'
+        })
+    }
+
     renderOthersDashboardPage(req, res){
         let url = req.url
         let otherId = url.split('/')[2]

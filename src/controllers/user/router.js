@@ -19,5 +19,6 @@ router.post('/add',isAdminOrStaff, userController.createNewUser)
       .get('/findMeetingsByTutorId', userController.findMeetingsByTutorId)
       .get('/findStudentsByTutorId', userController.findStudentsByTutorId)
       .get('/getStudentsAndStaffs', userController.getStudentsAndStaffs)
+      .get('/findStudentsWithoutClass', userController.findStudentsWithoutClass)
 
 module.exports = router

@@ -17,5 +17,7 @@ router.get('/dashboard', renderUIController.renderDashboardPage)
       .get('/dashboard/:id', isAuthorizedStaff, renderUIController.renderOthersDashboardPage)
       .get('/otherDashboards', isAuthorizedStaff, renderUIController.renderOthersDashboardListPage)
       .get('/call', renderUIController.renderCallPage)
+      .get('/classManagement/studentAssignment', isStaff, renderUIController.renderStudentAssignmentPage)
+      
 
 module.exports = router
