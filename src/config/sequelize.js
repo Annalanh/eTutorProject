@@ -86,7 +86,7 @@ User.belongsToMany(GroupChat, {through: Groups_Members, foreignKey: 'memberId' }
 /**
  * sync database
  */
-sequelize.sync({ force: false })
+sequelize.sync({ force: true })
 .then(() => {
   console.log('Database & table created')
 })
