@@ -60,7 +60,6 @@ class MeetingController {
         }, {
             where: {id: meetingId}
         }).then(updated => {
-            console.log("updated roif nay")
             if(updated[0]){
                 res.send({status: true})
             }else{

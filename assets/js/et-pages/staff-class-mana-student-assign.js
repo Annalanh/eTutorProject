@@ -79,8 +79,10 @@ var StudentTable = function () {
         $(document).ready(() => {
             var $deleteStudentBtns = document.getElementsByClassName('et-delete-student')
             for (var i = 0; i < $deleteStudentBtns.length; i++) {
+                let currentBtn = $deleteStudentBtns[i]
                 $deleteStudentBtns[i].onclick = (btn) => {
-                    var className = btn.target.attributes['student-name'].value
+                    let className = currentBtn.getAttribute('student-name')
+
                     swal.fire({
                         buttonsStyling: false,
 

@@ -21,7 +21,7 @@ const $incomingPhoneCallAudio = document.getElementById('et-incoming-phone-call-
 /**
  * setup topbar username, badge and its dropdown
  */
-function setUpTopBarUserName(){
+function setUpTopBarUserName() {
     let userName = localStorage.getItem('userName')
     let firstLetter = userName.charAt(0)
     $topBarUserName.innerText = userName
@@ -34,11 +34,11 @@ setUpTopBarUserName()
 /**
  * handle click Personal Tutor in asidebar
  */
-if($personalTutorHref){
+if ($personalTutorHref) {
     $.ajax({
-        url:'/class/findClassRoomsByUserId',
+        url: '/class/findClassRoomsByUserId',
         method: "POST",
-        data: {userId: localStorage.getItem('userId'),role: localStorage.getItem('role')}
+        data: { userId: localStorage.getItem('userId'), role: localStorage.getItem('role') }
     }).done(classRooms => {
         let classId = classRooms[0].classId
         $personalTutorHref.href = `/class/${classId}/stream`
@@ -59,11 +59,11 @@ $.ajax({
     url: '/notification/getNotificationsByUserId',
     method: 'GET'
 }).then(data => {
-    if(data.status) {
+    if (data.status) {
         let notifications = data.notifications
         notifications.forEach(noti => {
-            let { type, href, content, moreDetail } = noti
-            renderNewNotification({ type, data: { href, content, moreDetail }})
+            let { type, href, content, moreDetail, id, seen } = noti
+            renderNewNotification({ type, data: { href, content, moreDetail, notiId: id, seen } })
         })
     }
     else console.log(data.message)
@@ -74,16 +74,16 @@ $.ajax({
  */
 $signOutBtn.click((e) => {
     $.ajax({
-		method: "GET",
-		url: "/auth/logout",
-	})
-    .done(function (data) {
-        if(data.status) {
-            localStorage.removeItem('userId')
-            localStorage.removeItem('userName')
-            window.location.href = "/auth/login"
-        }
-    });
+        method: "GET",
+        url: "/auth/logout",
+    })
+        .done(function (data) {
+            if (data.status) {
+                localStorage.removeItem('userId')
+                localStorage.removeItem('userName')
+                window.location.href = "/auth/login"
+            }
+        });
 })
 
 /**
@@ -94,47 +94,66 @@ let noti_socket = io.connect("/notification")
 noti_socket.on('needConfirmMeeting', ({ tutorId, tutorName, studentId, studentName, creatorRole, classId, meetingName }) => {
     let currentUserId = localStorage.getItem('userId')
 
-    if(currentUserId == tutorId || currentUserId == studentId){
+    if (currentUserId == tutorId || currentUserId == studentId) {
         let currentUserRole = localStorage.getItem('role')
 
-        if(currentUserRole != creatorRole) {
+        if (currentUserRole != creatorRole) {
             let creatorName = ''
-            if(currentUserRole == 'student'){
+            if (currentUserRole == 'student') {
                 creatorName = tutorName
-            }else{
-                creatorName= studentName
+            } else {
+                creatorName = studentName
             }
 
             let content = `${creatorName} has just created a new meeting: ${meetingName}`
             let href = `/class/${classId}/meeting`
             let moreDetail = `Let's confirm!`
-            renderNewNotification({type: 'confirm_meeting', data: { content, href, moreDetail }})
+            renderNewNotification({ type: 'confirm_meeting', data: { content, href, moreDetail, notiId: undefined, seen: false } })
         }
     }
-    
+
 })
 
 noti_socket.on('confirmedMeeting', ({ tutorId, studentId, classId, meetingName }) => {
     let currentUserId = localStorage.getItem('userId')
 
-    if(currentUserId == tutorId || currentUserId == studentId){
+    if (currentUserId == tutorId || currentUserId == studentId) {
         let content = `${meetingName} has just been confirmed`
         let moreDetail = `Click to see detail!`
         let href = `/class/${classId}/meeting`
 
-        renderNewNotification({type: 'confirmed_meeting', data: { content, moreDetail, href }})
+        renderNewNotification({ type: 'confirmed_meeting', data: { content, moreDetail, href, notiId: undefined, seen: false } })
+    }
+})
+noti_socket.on('myNewNotiId', ({ notiId, notiOwnerId }) => {
+    if(notiOwnerId == localStorage.getItem('userId')){
+        $notiList.childNodes[0].id = `et-noti-item-${notiId}`
+        let href = $notiList.childNodes[0].getAttribute('href')
+
+        $notiList.childNodes[0].addEventListener('click', (e) => {
+            e.preventDefault()
+            $.ajax({
+                url: '/notification/updateNotiSeenStt',
+                method: "POST",
+                data: { notiId }
+            }).then(data => {
+                if(data.status) window.location.href = href
+                else console.log('Cannot open!')
+            })
+        })
     }
 })
 /**
  * render new notification 
  */
-function renderNewNotification({ type, data}){
-    console.log('render')
-    if(type == 'confirm_meeting'){
+function renderNewNotification({ type, data }) {
+    let href = data.href
+    if (type == 'confirm_meeting') {
         let $newNotiItem = document.createElement('a')
         $newNotiItem.classList.add('kt-notification__item')
-        $newNotiItem.setAttribute('href', data.href) 
-        $newNotiItem.innerHTML =`<div class="kt-notification__item-icon">
+        $newNotiItem.id = `et-noti-item-${data.notiId}`
+        $newNotiItem.setAttribute('href', href)
+        $newNotiItem.innerHTML = `<div class="kt-notification__item-icon">
                                     <i class="flaticon-whatsapp kt-font-danger"></i>
                                 </div>
                                 <div class="kt-notification__item-details">
@@ -146,13 +165,32 @@ function renderNewNotification({ type, data}){
                                     </div>
                                 </div>`
 
+        if (!data.seen) $newNotiItem.style.backgroundColor = "#edf2fa"
         $notiList.insertBefore($newNotiItem, $notiList.childNodes[0])
 
-    }else if(type == 'confirmed_meeting'){
+        document.getElementById(`et-noti-item-${data.notiId}`).addEventListener('click', (e) => {
+            e.preventDefault()
+            if (data.seen) {
+                window.location.href = href
+            } else if (data.notiId != undefined){
+                $.ajax({
+                    url: '/notification/updateNotiSeenStt',
+                    method: "POST",
+                    data: { notiId: data.notiId }
+                }).then(data => {
+                    if(data.status) window.location.href = href
+                    else console.log('Cannot open!')
+                })
+            }
+        })
+
+
+    } else if (type == 'confirmed_meeting') {
         let $newNotiItem = document.createElement('a')
         $newNotiItem.classList.add('kt-notification__item')
-        $newNotiItem.setAttribute('href', data.href) 
-        $newNotiItem.innerHTML =`<div class="kt-notification__item-icon">
+        $newNotiItem.id = `et-noti-item-${data.notiId}`
+        $newNotiItem.setAttribute('href', href)
+        $newNotiItem.innerHTML = `<div class="kt-notification__item-icon">
                                     <i class="flaticon-whatsapp kt-font-success"></i>
                                 </div>
                                 <div class="kt-notification__item-details">
@@ -163,10 +201,27 @@ function renderNewNotification({ type, data}){
                                         ${data.moreDetail}
                                     </div>
                                 </div>`
-
+        if (!data.seen) $newNotiItem.style.backgroundColor = "#edf2fa"
         $notiList.insertBefore($newNotiItem, $notiList.childNodes[0])
+
+        document.getElementById(`et-noti-item-${data.notiId}`).addEventListener('click', (e) => {
+            e.preventDefault()
+            if (data.seen) {
+                window.location.href = href
+            } else {
+                $.ajax({
+                    url: '/notification/updateNotiSeenStt',
+                    method: "POST",
+                    data: { notiId: data.notiId }
+                }).then(data => {
+                    if(data.status) window.location.href = href
+                    else console.log('Cannot open!')
+                })
+            }
+        })
     }
 }
+
 
 
 /**
@@ -177,8 +232,8 @@ let call_noti_socket = io.connect("/callNoti")
 /**
  * incoming call notification
  */
-call_noti_socket.on('joinACall', ({ callerId, callerName, answererId, answererName}) => {
-    if(answererId == localStorage.getItem('userId')){
+call_noti_socket.on('joinACall', ({ callerId, callerName, answererId, answererName }) => {
+    if (answererId == localStorage.getItem('userId')) {
         showAnswerCallModal({ callerName, callerId })
     }
 })
@@ -199,7 +254,7 @@ $cancelCallBtn.addEventListener('click', () => {
  * call being canceled notification
  */
 call_noti_socket.on('canceledCall', ({ callerId, callerName, answererId, answererName }) => {
-    if(answererId == localStorage.getItem('userId')){
+    if (answererId == localStorage.getItem('userId')) {
         hideAnswerCallModal()
     }
 })
@@ -218,7 +273,7 @@ $declineCallBtn.addEventListener('click', () => {
  * call being declined notification
  */
 call_noti_socket.on('declinedCall', ({ callerId, callerName, answererId, answererName }) => {
-    if(callerId == localStorage.getItem('userId')){
+    if (callerId == localStorage.getItem('userId')) {
         hideCallModal()
     }
 })
@@ -234,21 +289,21 @@ $acceptCallBtn.addEventListener('click', () => {
     call_noti_socket.emit('acceptCall', { callerId, callerName, answererId, answererName }, () => {
         // window.location.href = '/call'
         hideAnswerCallModal()
-        window.open("/call"); 
-    })  
+        window.open("/call");
+    })
 })
 /**
  * call being accepted notification
  */
 call_noti_socket.on('acceptedCall', ({ callerId, callerName, answererId, answererName }) => {
-    if(callerId == localStorage.getItem('userId')) {
+    if (callerId == localStorage.getItem('userId')) {
         // window.location.href = '/call/#1'
         hideCallModal()
-        window.open("/call/#1"); 
+        window.open("/call/#1");
     }
 })
 
-function showCallModal({ answererName}){
+function showCallModal({ answererName }) {
     $callModal.style.display = 'block'
     $callModal.classList.add('show')
     $callModal.setAttribute('aria-modal', true)
@@ -256,7 +311,7 @@ function showCallModal({ answererName}){
     addFadeShadow()
     $phoneRingAudio.play()
 }
-function hideCallModal(){
+function hideCallModal() {
     $callModal.style.display = 'none'
     $callModal.classList.remove('show')
     $callModal.removeAttribute('aria-modal')
@@ -264,17 +319,17 @@ function hideCallModal(){
     removeFadeShadow()
     $phoneRingAudio.load()
 }
-function showAnswerCallModal({ callerName, callerId }){
+function showAnswerCallModal({ callerName, callerId }) {
     $answerCallModal.style.display = 'block'
     $answerCallModal.classList.add('show')
-    $answerCallModal.setAttribute('aria-modal', true) 
+    $answerCallModal.setAttribute('aria-modal', true)
     $answerCallModal.querySelector('.et-calling-person-name').innerText = callerName
     $answerCallModal.setAttribute('caller-id', callerId)
     $answerCallModal.setAttribute('caller-name', callerName)
     addFadeShadow()
     $incomingPhoneCallAudio.play()
 }
-function hideAnswerCallModal(){
+function hideAnswerCallModal() {
     $answerCallModal.style.display = 'none'
     $answerCallModal.classList.remove('show')
     $answerCallModal.removeAttribute('aria-modal')
@@ -282,15 +337,15 @@ function hideAnswerCallModal(){
     removeFadeShadow()
     $incomingPhoneCallAudio.load()
 }
-function addFadeShadow(){
+function addFadeShadow() {
     let fadeShadow = document.createElement('div')
     fadeShadow.classList.add('modal-backdrop')
     fadeShadow.classList.add('fade')
     fadeShadow.classList.add('show')
-    
+
     document.body.appendChild(fadeShadow)
 }
-function removeFadeShadow(){
+function removeFadeShadow() {
     let currentFadeShadows = document.getElementsByClassName('modal-backdrop')
     document.body.removeChild(currentFadeShadows[currentFadeShadows.length - 1])
 }

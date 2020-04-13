@@ -91,7 +91,6 @@ $.ajax({
  * disable/enable reply button
  */
 $messageTextJQ.bind('input', (e) => {
-    console.log(e.target.value)
     if(e.target.value == ''){
         $replyBtn.disabled = true
     }else{
@@ -108,7 +107,6 @@ function renderMessageBox({ groupId, groupName, answererId }){
 		data: { groupId }
 	})
 	.done(function ({ messages, currentUserId }) {
-        console.log(messages)
         /**
          * set answerer id to call icon
          */
@@ -387,7 +385,6 @@ $searchResult.addEventListener('click', () => {
             contentType: 'application/json'
         }).then((data) => {
             if(data.status){
-                console.log(data.records)
                 let groupId = data.records[0].groupId
                 let groupName = $searchName.innerText
                 hideSearchListShowChatList()
@@ -485,8 +482,6 @@ socket.on('inviteToNewGroup', ({memberList, groupId, groupName}) => {
 
     if(isInvited){
         socket.emit('joinNewGroup', { groupId }, function(){
-            console.log('ban da join vao group moi')
-
             /**
              * check if chat is private or group of people
              */

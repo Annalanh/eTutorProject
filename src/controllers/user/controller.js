@@ -4,7 +4,6 @@ const { Sequelize } = require('../../config/sequelize')
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
 const qs = require('qs')
-const {Op} = require('sequelize')
 
 class UserController {
     createNewUser(req, res){
@@ -90,7 +89,6 @@ class UserController {
     }
 
     findUserById(req, res) {
-        console.log(req.body);
         User.findOne({
             where: { id: req.body.userId }
         }).then(user => {
@@ -148,7 +146,6 @@ class UserController {
                     delete user.dataValues.password
                     return user
                 })
-                console.log(users)
                 res.send({ status: true, users })
             } else {
                 res.send({ status: false, message: "No user found!" })
@@ -345,8 +342,6 @@ class UserController {
         })
     }
     findStudentsWithoutClass(req, res) {
-        
-        console.log('ye');
         User.findAll({
             where: {
                 role: 'student',
@@ -355,7 +350,10 @@ class UserController {
             include: [
                 {model: ClassRoom}
             ]
-        }).then(users => res.send({status: true, users}))
+        }).then(users => {
+            res.send({status: true, users})
+
+        })
     }
 }
 module.exports = new UserController()

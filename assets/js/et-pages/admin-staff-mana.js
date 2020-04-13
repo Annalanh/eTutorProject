@@ -101,7 +101,6 @@ $updateStaffConfirmBtn.addEventListener('click', (e) => {
         data: {userName: $editUserNameInput.value, email: $editEmailInput.value, role: 'staff', userId: staffId, authorizedStaff }
     }).then(data => {
         if(data.status){
-            console.log(data.message)
             //hide kt_modal_4(modal for edit) and et_modal_confirm_update
             $editStaffForm.style.display = "none"
             $modalConfirmUpdate.style.display = "none"
@@ -133,7 +132,6 @@ $addNewStaffConfirmBtn.addEventListener('click', (e) => {
     }).done((data) => {
         if(data.status){
             let {id, username, email, role} = data.newUser
-            console.log(data.message)
             //hide et_modal_create and et_modal_confirm_add
             $modalConfirmAdd.style.display = "none"
             $addNewStaffForm.style.display = "none"
@@ -159,7 +157,6 @@ $deleteStaffBtn.addEventListener('click', () => {
         data: {userId: staffId}
     }).done(data => {
         if(data.status){
-            console.log(data.message)
             //hide et_modal_confirm_delete
             $modalConfirmDelete.style.display = "none"
             document.body.removeChild(document.querySelector('.modal-backdrop'))

@@ -3,6 +3,7 @@ module.exports = (sequelize, Sequelize) => {
         content: { type: Sequelize.STRING },
         moreDetail: { type: Sequelize.STRING },
         href: { type: Sequelize.STRING },
-        type: { type: Sequelize.STRING }
+        type: { type: Sequelize.STRING },
+        seen: { type: Sequelize.BOOLEAN },
     })
 }

@@ -64,8 +64,8 @@ $.ajax({
     if(data.status) {
         let notifications = data.notifications
         notifications.forEach(noti => {
-            let { type, href, content, moreDetail } = noti
-            renderNewNotification({ type, data: { href, content, moreDetail }})
+            let { type, href, content, moreDetail, id, seen } = noti
+            renderNewNotification({ type, data: { href, content, moreDetail, notiId: id, seen }})
         })
     }
     else console.log(data.message)
@@ -120,7 +120,7 @@ noti_socket.on('needConfirmMeeting', ({ tutorId, tutorName, studentId, studentNa
             let content = `${creatorName} has just created a new meeting: ${meetingName}`
             let href = `/class/${classId}/meeting`
             let moreDetail = `Let's confirm!`
-            renderNewNotification({type: 'confirm_meeting', data: { content, href, moreDetail }})
+            renderNewNotification({type: 'confirm_meeting', data: { content, href, moreDetail, notiId: undefined, seen: false }})
         }
     }
     
@@ -134,18 +134,38 @@ noti_socket.on('confirmedMeeting', ({ tutorId, studentId, classId, meetingName }
         let moreDetail = `Click to see detail!`
         let href = `/class/${classId}/meeting`
 
-        renderNewNotification({type: 'confirmed_meeting', data: { content, moreDetail, href }})
+        renderNewNotification({type: 'confirmed_meeting', data: { content, moreDetail, href, notiId: undefined, seen: false }})
+    }
+})
+
+noti_socket.on('myNewNotiId', ({ notiId, notiOwnerId }) => {
+    if(notiOwnerId == localStorage.getItem('userId')){
+        $notiList.childNodes[0].id = `et-noti-item-${notiId}`
+        let href = $notiList.childNodes[0].getAttribute('href')
+
+        $notiList.childNodes[0].addEventListener('click', (e) => {
+            e.preventDefault()
+            $.ajax({
+                url: '/notification/updateNotiSeenStt',
+                method: "POST",
+                data: { notiId }
+            }).then(data => {
+                if(data.status) window.location.href = href
+                else console.log('Cannot open!')
+            })
+        })
     }
 })
 /**
  * render new notification 
  */
 function renderNewNotification({ type, data}){
-    console.log('render')
+    let href = data.href
     if(type == 'confirm_meeting'){
         let $newNotiItem = document.createElement('a')
         $newNotiItem.classList.add('kt-notification__item')
-        $newNotiItem.setAttribute('href', data.href) 
+        $newNotiItem.id = `et-noti-item-${data.notiId}`
+        $newNotiItem.setAttribute('href', href) 
         $newNotiItem.innerHTML =`<div class="kt-notification__item-icon">
                                     <i class="flaticon-whatsapp kt-font-danger"></i>
                                 </div>
@@ -157,13 +177,30 @@ function renderNewNotification({ type, data}){
                                         ${data.moreDetail}
                                     </div>
                                 </div>`
-
+        if (!data.seen) $newNotiItem.style.backgroundColor = "#edf2fa"
         $notiList.insertBefore($newNotiItem, $notiList.childNodes[0])
+
+        document.getElementById(`et-noti-item-${data.notiId}`).addEventListener('click', (e) => {
+            e.preventDefault()
+            if (data.seen) {
+                window.location.href = href
+            } else if (data.notiId != undefined){
+                $.ajax({
+                    url: '/notification/updateNotiSeenStt',
+                    method: "POST",
+                    data: { notiId: data.notiId }
+                }).then(data => {
+                    if(data.status) window.location.href = href
+                    else console.log('Cannot open!')
+                })
+            }
+        })
 
     }else if(type == 'confirmed_meeting'){
         let $newNotiItem = document.createElement('a')
         $newNotiItem.classList.add('kt-notification__item')
-        $newNotiItem.setAttribute('href', data.href) 
+        $newNotiItem.id = `et-noti-item-${data.notiId}`
+        $newNotiItem.setAttribute('href', href) 
         $newNotiItem.innerHTML =`<div class="kt-notification__item-icon">
                                     <i class="flaticon-whatsapp kt-font-success"></i>
                                 </div>
@@ -175,8 +212,24 @@ function renderNewNotification({ type, data}){
                                         ${data.moreDetail}
                                     </div>
                                 </div>`
-
+        if (!data.seen) $newNotiItem.style.backgroundColor = "#edf2fa"
         $notiList.insertBefore($newNotiItem, $notiList.childNodes[0])
+
+        document.getElementById(`et-noti-item-${data.notiId}`).addEventListener('click', (e) => {
+            e.preventDefault()
+            if (data.seen) {
+                window.location.href = href
+            } else {
+                $.ajax({
+                    url: '/notification/updateNotiSeenStt',
+                    method: "POST",
+                    data: { notiId: data.notiId }
+                }).then(data => {
+                    if(data.status) window.location.href = href
+                    else console.log('Cannot open!')
+                })
+            }
+        })
     }
 }
 

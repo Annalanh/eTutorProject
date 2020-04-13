@@ -12,7 +12,6 @@ $.ajax({
     url: '/user/findMeetingsByTutorId',
     method: 'GET',
 }).done(data => {
-    console.log(data)
     if(data.status){
         //render meetings
         let meetings = data.meetings

@@ -154,6 +154,7 @@ chatNS.on('connection', (socket) => {
 let notiNS = io.of("/notification")
 notiNS.on('connection', function(socket) {
     Meeting.afterCreate((newMeeting, options) => {
+        console.log('tao meeting')
         let meetingName = newMeeting.name
         let classId = newMeeting.classId
         let tutorConfirmed = newMeeting.tutorConfirmed
@@ -201,6 +202,11 @@ notiNS.on('connection', function(socket) {
                 meetingName
             })
         })
+    })
+    
+    socket.on('newNotiId', ({ notiId, notiOwnerId }) => {
+        console.log(notiId, notiOwnerId)
+        socket.broadcast.emit('myNewNotiId', ({ notiId, notiOwnerId }))
     })
     
 })

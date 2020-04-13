@@ -178,7 +178,6 @@ $deleteUserBtn.addEventListener('click', () => {
         data: { userId }
     }).done(data => {
         if(data.status){
-            console.log(data.message)
             //hide et_modal_confirm_delete
             $modalConfirmDelete.style.display = "none"
             document.body.removeChild(document.querySelector('.modal-backdrop'))

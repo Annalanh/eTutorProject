@@ -85,8 +85,6 @@ function renderSharedFiles({ container, fileData }){
         fileImg = `<img src="../media/icons/svg/Files/Selected-file.svg"/>`
     }
 
-    console.log(fileName, fileType)
-
     let $sharedFile = document.createElement('div')
     $sharedFile.classList.add('kt-widget4__item')
     $sharedFile.innerHTML = `<div class="kt-widget4__pic kt-widget4__pic--icon">
@@ -114,7 +112,6 @@ $.ajax({
 }).done(data => {
     if(data.status){
         let messages = data.messages
-        console.log(messages)
         messages.forEach(message => {
             renderRecentMessage({ container: $tutorRecentMessageList, message })
         })
