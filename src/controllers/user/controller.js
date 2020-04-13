@@ -173,7 +173,6 @@ class UserController {
 
     findStudentsWithoutClass(req, res) {
         
-        console.log('ye');
         User.findAll({
             where: {
                 role: 'student',

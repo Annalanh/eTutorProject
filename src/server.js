@@ -24,6 +24,7 @@ const fileRouter = require('./controllers/file/router')
 const commentRouter = require('./controllers/comment/router')
 const meetingRouter = require('./controllers/meeting/router')
 const notificationRouter = require('./controllers/notification/router')
+const emailRouter = require('./controllers/email/router')
 
 const assetsDirectoryPath = path.join(__dirname,'..','/assets')
 const nodeModulesDirectoryPath = path.join(__dirname,'..','/node_modules')
@@ -288,5 +289,7 @@ app.use('/group', groupChatRouter)
 app.use('/meeting', meetingRouter)
 
 app.use('/notification', notificationRouter)
+
+app.use('/email', emailRouter)
 
 server.listen(process.env.PORT || 3000);
