@@ -49,6 +49,7 @@ $.ajax({
 
         let chatItem = document.createElement('div')
         chatItem.setAttribute('group-id', group.groupId)
+        chatItem.setAttribute('answerer-id', answererId)
         chatItem.className = 'et-chat-item'
         if(index == 0) chatItem.classList.add('et-top-chat-item')
         chatItem.innerHTML =  `<div class="kt-widget__item">
@@ -388,7 +389,7 @@ $searchResult.addEventListener('click', () => {
                 let groupId = data.records[0].groupId
                 let groupName = $searchName.innerText
                 hideSearchListShowChatList()
-                renderMessageBox({groupId, groupName})
+                renderMessageBox({groupId, groupName, answererId: partnerId })
             }
         })
     }else{
@@ -406,9 +407,10 @@ function clickOnFoundChatItem(){
      */
     let groupId = $topChatItem.getAttribute('group-id')
     let groupName = $topChatItem.querySelector(".kt-widget__username").innerText
+    let answererId = $topChatItem.getAttribute('answerer-id')
 
     hideSearchListShowChatList()
-    renderMessageBox({groupId, groupName})
+    renderMessageBox({groupId, groupName, answererId })
 }
 /**
  * handle send message event
@@ -482,15 +484,19 @@ socket.on('inviteToNewGroup', ({memberList, groupId, groupName}) => {
 
     if(isInvited){
         socket.emit('joinNewGroup', { groupId }, function(){
+            //get answererId
+            let answererId = 0
             /**
              * check if chat is private or group of people
              */
             if(groupName == null){
                 let partner = memberList.find(member => member.memberId != currentUserId)
                 groupName = partner.memberName
+                answererId = partner.memberId
             }
             let chatItem = document.createElement('div')
             chatItem.setAttribute('group-id', groupId)
+            chatItem.setAttribute('answerer-id', answererId)
             chatItem.classList.add('et-top-chat-item')
             chatItem.classList.add('et-chat-item')
             chatItem.innerHTML =  `<div class="kt-widget__item">
@@ -516,7 +522,7 @@ socket.on('inviteToNewGroup', ({memberList, groupId, groupName}) => {
             $chatList.appendChild(chatItem)
             $chatList.insertBefore(chatItem, $chatList.childNodes[0]);
             chatItem.addEventListener('click', (e) => {
-                renderMessageBox({ groupId, groupName })
+                renderMessageBox({ groupId, groupName, answererId })
             })
     
             userGroupChats.push(groupId)

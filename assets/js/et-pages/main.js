@@ -233,7 +233,10 @@ let call_noti_socket = io.connect("/callNoti")
  * incoming call notification
  */
 call_noti_socket.on('joinACall', ({ callerId, callerName, answererId, answererName }) => {
+    console.log('incoming call')
+    console.log(answererId)
     if (answererId == localStorage.getItem('userId')) {
+        console.log('incoming call')
         showAnswerCallModal({ callerName, callerId })
     }
 })
