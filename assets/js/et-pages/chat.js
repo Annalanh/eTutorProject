@@ -301,38 +301,43 @@ $searchChatBoxForm.addEventListener('submit', (e) => {
     e.preventDefault()
     let searchName = $searchChatBoxInput.val()
     let foundGroup = false
-    /**
-     * search group name in current chat list
-     */
-    for(let i = 0; i < $chatListItems.length;i++){
-        let groupName = $chatListItems[i].querySelector(".kt-widget__username").innerText
-        $chatListItems[i].classList.remove('et-top-chat-item')
-        if(searchName == groupName){
-            foundGroup = true
-            $searchResult.style.display = 'flex'
-            $searchName.innerText = groupName
-            $chatListItems[i].classList.add('et-top-chat-item')
-            break
-        }
-    }
-    /**
-     * if there is no group name existing, call api to search for user name
-     */
-    if(!foundGroup){
-        $.ajax({
-            url: '/user/findByName',
-            method: "POST",
-            data: { userName: searchName}
-        }).then((data) => {
-            if(data.status){
+
+    if(searchName != localStorage.getItem('userName')){
+        /**
+         * search group name in current chat list
+         */
+        for(let i = 0; i < $chatListItems.length;i++){
+            let groupName = $chatListItems[i].querySelector(".kt-widget__username").innerText
+            $chatListItems[i].classList.remove('et-top-chat-item')
+            if(searchName == groupName){
+                foundGroup = true
                 $searchResult.style.display = 'flex'
-                $searchName.innerText = searchName
-                $searchResult.setAttribute('partner-id', data.userId)
-                newGroup = true
-            }else{
-                $searchNotFound.style.display = 'flex'
+                $searchName.innerText = groupName
+                $chatListItems[i].classList.add('et-top-chat-item')
+                break
             }
-        })
+        }
+        /**
+         * if there is no group name existing, call api to search for user name
+         */
+        if(!foundGroup){
+            $.ajax({
+                url: '/user/findByName',
+                method: "POST",
+                data: { userName: searchName}
+            }).then((data) => {
+                if(data.status){
+                    $searchResult.style.display = 'flex'
+                    $searchName.innerText = searchName
+                    $searchResult.setAttribute('partner-id', data.userId)
+                    newGroup = true
+                }else{
+                    $searchNotFound.style.display = 'flex'
+                }
+            })
+        }        
+    }else{
+        $searchNotFound.style.display = 'flex'
     }
 })
 /**
