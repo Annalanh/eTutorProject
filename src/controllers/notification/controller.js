@@ -18,14 +18,14 @@ class NotificationController {
             }
 
             Notification.create(
-                { content, moreDetail, type, href }
+                { content, moreDetail, type, href, seen: false }
             ).then(newNoti => {
                 if (newNoti) {
                     Notifications_Users.create({
                         userId: notiOwnerId,
                         notificationId: newNoti.id
                     }).then(notiUser => {
-                        if (notiUser) res.send({ status: true })
+                        if (notiUser) res.send({ status: true, notiId: newNoti.id, notiOwnerId })
                         else res.send({ status: false, message: 'Cannot add new notification!' })
                     })
                 } else {
@@ -42,11 +42,29 @@ class NotificationController {
             where: { id: userId },
             include: {
                 model: Notification
-            }
+            },
+            order: [
+                [Notification,'createdAt', 'ASC'],
+            ],
         }).then(user => {
             if (user) res.send({ status: true, notifications: user.Notifications })
             else res.send({ status: false, message: "Cannot get notificaitons!" })
         })
     }
+
+    updateNotiSeenStt(req, res){
+        let { notiId } = req.body
+
+        Notification.update({
+            seen: true
+        }, {
+            where: { id: notiId }
+        }).then(updated => {
+            res.send({status: true})
+        })
+
+    }
+
+
 }
 module.exports = new NotificationController()

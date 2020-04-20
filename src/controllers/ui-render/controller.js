@@ -21,7 +21,7 @@ class UIRender{
         if(currentUserRole == 'admin'){
             res.render('admin-dashboard', {
                 title: 'Etutoring',
-                thisPageStyleSheets: [], 
+                thisPageStyleSheets: ['../css/et-pages/admin-dashboard.css'], 
                 thisPageScripts: ['../js/et-pages/admin-dashboard.js'],
                 isAdminOrStaff,
                 isTutorOrStudent,
@@ -368,8 +368,11 @@ class UIRender{
         let isAdminOrStaff = false
         let isTutorOrStudent = false
         let isStudent = false
+        let isAdmin = false
+        let authorizedStaff = req.session.user.authorizedStaff
 
         if(currentUserRole == "student") isStudent = true
+        if(currentUserRole == "admin") isAdmin = true
 
         if(currentUserRole == 'admin' || currentUserRole == 'staff'){
             isAdminOrStaff = true
@@ -383,6 +386,8 @@ class UIRender{
             isAdminOrStaff,
             isTutorOrStudent,
             isStudent,
+            isAdmin,
+            authorizedStaff,
             layout: 'main'
         })
     }
@@ -483,5 +488,6 @@ class UIRender{
             layout: 'call'
         })
     }
+
 }
 module.exports = new UIRender()

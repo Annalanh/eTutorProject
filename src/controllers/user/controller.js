@@ -1,4 +1,4 @@
-const { User, ClassRoom, Meeting, Message, Post, File, GroupChat } = require('../../config/sequelize')
+const { User, ClassRoom, Meeting, Message, Post, File, GroupChat, Students_ClassRooms } = require('../../config/sequelize')
 const { Op } = require("sequelize");
 const { Sequelize } = require('../../config/sequelize')
 const bcrypt = require('bcrypt');
@@ -89,7 +89,6 @@ class UserController {
     }
 
     findUserById(req, res) {
-        console.log(req.body);
         User.findOne({
             where: { id: req.body.userId }
         }).then(user => {
@@ -147,7 +146,6 @@ class UserController {
                     delete user.dataValues.password
                     return user
                 })
-                console.log(users)
                 res.send({ status: true, users })
             } else {
                 res.send({ status: false, message: "No user found!" })
@@ -172,7 +170,6 @@ class UserController {
     }
 
     findStudentsWithoutClass(req, res) {
-        
         User.findAll({
             where: {
                 role: 'student',
@@ -181,7 +178,10 @@ class UserController {
             include: [
                 {model: ClassRoom}
             ]
-        }).then(users => res.send({status: true, users}))
+        }).then(users => {
+            res.send({status: true, users})
+
+        })
     }
 
     findStudentWithNoTutor(req, res){
@@ -356,5 +356,6 @@ class UserController {
             }
         })
     }
+    
 }
 module.exports = new UserController()

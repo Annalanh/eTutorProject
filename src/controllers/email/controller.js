@@ -1,5 +1,5 @@
 const sgMail = require('@sendgrid/mail');
-sgMail.setApiKey(process.env['SENDGRID_API_KEY_1']);
+sgMail.setApiKey(process.env['SENDGRID_API_KEY']);
 const { User } = require('../../config/sequelize')
 class emailController {
 

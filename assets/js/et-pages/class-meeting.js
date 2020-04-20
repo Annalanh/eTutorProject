@@ -34,7 +34,6 @@ $.ajax({
     data: { classId }
 }).done(data => {
     if(data.status){
-        console.log(data.meetings)
         let meetings = data.meetings
         let currentDate = ''
 
@@ -95,6 +94,8 @@ $addNewMeetingBtn.addEventListener('click', (e) => {
                 }
             }).then(data => {
                 if(data.status) {
+                    let { notiId, notiOwnerId } = data
+                    noti_socket.emit('newNotiId', { notiId, notiOwnerId })
                     location.reload()
                 }
                 else console.log(data.message)
@@ -211,6 +212,8 @@ $confirmConfirmMeeting.addEventListener('click', () => {
                 }
             }).then(data => {
                 if(data.status) {
+                    let { notiId, notiOwnerId } = data
+                    noti_socket.emit('newNotiId', { notiId, notiOwnerId })
                     location.reload()
                 }
                 else console.log(data.message)

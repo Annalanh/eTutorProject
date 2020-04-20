@@ -49,6 +49,7 @@ $.ajax({
 
         let chatItem = document.createElement('div')
         chatItem.setAttribute('group-id', group.groupId)
+        chatItem.setAttribute('answerer-id', answererId)
         chatItem.className = 'et-chat-item'
         if(index == 0) chatItem.classList.add('et-top-chat-item')
         chatItem.innerHTML =  `<div class="kt-widget__item">
@@ -91,7 +92,6 @@ $.ajax({
  * disable/enable reply button
  */
 $messageTextJQ.bind('input', (e) => {
-    console.log(e.target.value)
     if(e.target.value == ''){
         $replyBtn.disabled = true
     }else{
@@ -108,7 +108,6 @@ function renderMessageBox({ groupId, groupName, answererId }){
 		data: { groupId }
 	})
 	.done(function ({ messages, currentUserId }) {
-        console.log(messages)
         /**
          * set answerer id to call icon
          */
@@ -302,38 +301,43 @@ $searchChatBoxForm.addEventListener('submit', (e) => {
     e.preventDefault()
     let searchName = $searchChatBoxInput.val()
     let foundGroup = false
-    /**
-     * search group name in current chat list
-     */
-    for(let i = 0; i < $chatListItems.length;i++){
-        let groupName = $chatListItems[i].querySelector(".kt-widget__username").innerText
-        $chatListItems[i].classList.remove('et-top-chat-item')
-        if(searchName == groupName){
-            foundGroup = true
-            $searchResult.style.display = 'flex'
-            $searchName.innerText = groupName
-            $chatListItems[i].classList.add('et-top-chat-item')
-            break
-        }
-    }
-    /**
-     * if there is no group name existing, call api to search for user name
-     */
-    if(!foundGroup){
-        $.ajax({
-            url: '/user/findByName',
-            method: "POST",
-            data: { userName: searchName}
-        }).then((data) => {
-            if(data.status){
+
+    if(searchName != localStorage.getItem('userName')){
+        /**
+         * search group name in current chat list
+         */
+        for(let i = 0; i < $chatListItems.length;i++){
+            let groupName = $chatListItems[i].querySelector(".kt-widget__username").innerText
+            $chatListItems[i].classList.remove('et-top-chat-item')
+            if(searchName == groupName){
+                foundGroup = true
                 $searchResult.style.display = 'flex'
-                $searchName.innerText = searchName
-                $searchResult.setAttribute('partner-id', data.userId)
-                newGroup = true
-            }else{
-                $searchNotFound.style.display = 'flex'
+                $searchName.innerText = groupName
+                $chatListItems[i].classList.add('et-top-chat-item')
+                break
             }
-        })
+        }
+        /**
+         * if there is no group name existing, call api to search for user name
+         */
+        if(!foundGroup){
+            $.ajax({
+                url: '/user/findByName',
+                method: "POST",
+                data: { userName: searchName}
+            }).then((data) => {
+                if(data.status){
+                    $searchResult.style.display = 'flex'
+                    $searchName.innerText = searchName
+                    $searchResult.setAttribute('partner-id', data.userId)
+                    newGroup = true
+                }else{
+                    $searchNotFound.style.display = 'flex'
+                }
+            })
+        }        
+    }else{
+        $searchNotFound.style.display = 'flex'
     }
 })
 /**
@@ -387,11 +391,10 @@ $searchResult.addEventListener('click', () => {
             contentType: 'application/json'
         }).then((data) => {
             if(data.status){
-                console.log(data.records)
                 let groupId = data.records[0].groupId
                 let groupName = $searchName.innerText
                 hideSearchListShowChatList()
-                renderMessageBox({groupId, groupName})
+                renderMessageBox({groupId, groupName, answererId: partnerId })
             }
         })
     }else{
@@ -409,9 +412,10 @@ function clickOnFoundChatItem(){
      */
     let groupId = $topChatItem.getAttribute('group-id')
     let groupName = $topChatItem.querySelector(".kt-widget__username").innerText
+    let answererId = $topChatItem.getAttribute('answerer-id')
 
     hideSearchListShowChatList()
-    renderMessageBox({groupId, groupName})
+    renderMessageBox({groupId, groupName, answererId })
 }
 /**
  * handle send message event
@@ -485,17 +489,19 @@ socket.on('inviteToNewGroup', ({memberList, groupId, groupName}) => {
 
     if(isInvited){
         socket.emit('joinNewGroup', { groupId }, function(){
-            console.log('ban da join vao group moi')
-
+            //get answererId
+            let answererId = 0
             /**
              * check if chat is private or group of people
              */
             if(groupName == null){
                 let partner = memberList.find(member => member.memberId != currentUserId)
                 groupName = partner.memberName
+                answererId = partner.memberId
             }
             let chatItem = document.createElement('div')
             chatItem.setAttribute('group-id', groupId)
+            chatItem.setAttribute('answerer-id', answererId)
             chatItem.classList.add('et-top-chat-item')
             chatItem.classList.add('et-chat-item')
             chatItem.innerHTML =  `<div class="kt-widget__item">
@@ -521,7 +527,7 @@ socket.on('inviteToNewGroup', ({memberList, groupId, groupName}) => {
             $chatList.appendChild(chatItem)
             $chatList.insertBefore(chatItem, $chatList.childNodes[0]);
             chatItem.addEventListener('click', (e) => {
-                renderMessageBox({ groupId, groupName })
+                renderMessageBox({ groupId, groupName, answererId })
             })
     
             userGroupChats.push(groupId)

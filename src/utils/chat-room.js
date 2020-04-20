@@ -18,14 +18,12 @@ function editChatRoomByUserId({ id, socketId }) {
             chatRooms[index].answererSocketId = socketId
         }
     }
-    console.log(chatRooms)
 }
 function removeChatRoomBySocketId(id) {
     const index = chatRooms.findIndex((chatRoom) => chatRoom.callerSocketId == id || chatRoom.answererSocketId == id)
 
     if (index != -1) chatRooms.splice(index, 1)
 
-    console.log(chatRooms)
 }
 module.exports = {
     getChatRoomByUserId,

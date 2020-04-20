@@ -93,9 +93,16 @@ Notification.belongsToMany(User, {through: Notifications_Users, foreignKey: 'not
 /**
  * sync database
  */
-sequelize.sync({ force: false })
+sequelize.sync({ force: true })
 .then(() => {
   console.log('Database & table created')
+  User.create({
+    name: 'admin',
+    email: 'admin@gmail.com',
+    fullname: 'admin',
+    password: '$2b$10$LfiaPWdgq7ic.VCea8T3oeWQ8Q/wI1P6G6d46p28reMI6wsXSxS5G',
+    role: 'admin'
+  })
 })
 
 
@@ -112,5 +119,6 @@ module.exports = {
   Students_ClassRooms,
   Notification,
   Notifications_Users,
-  Sequelize
+  Sequelize,
+  sequelize
 }
