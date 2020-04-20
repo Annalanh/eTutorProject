@@ -1,12 +1,12 @@
 const { User, ClassRoom } = require('../../config/sequelize')
 
-class classRoomController{
-    findClassRoomsByUserId(req, res){
+class classRoomController {
+    findClassRoomsByUserId(req, res) {
         let userId = req.body.userId
         let role = req.body.role
-        if(role == 'staff'){
+        if (role == 'staff') {
             User.findOne({
-                where: {id: userId},
+                where: { id: userId },
                 include: [
                     {
                         model: ClassRoom,
@@ -17,16 +17,16 @@ class classRoomController{
                 let classRooms = staff.StaffClass
                 res.send(classRooms)
             })
-        }else if(role == 'tutor'){
+        } else if (role == 'tutor') {
             User.findOne({
-                where: {id: userId},
+                where: { id: userId },
                 include: [
                     {
                         model: ClassRoom,
                         as: "TutorClass",
                         include: [
                             {
-                                model: User, 
+                                model: User,
                                 as: "Staff"
                             }
                         ]
@@ -34,7 +34,7 @@ class classRoomController{
                 ]
             }).then(tutor => {
                 let tutorName = tutor.name
-                let tutorId = tutor.id 
+                let tutorId = tutor.id
                 let classRooms = tutor.TutorClass
                 let classRoomData = []
 
@@ -50,15 +50,15 @@ class classRoomController{
                 res.send(classRoomData)
 
             })
-        }else if(role == 'student'){
+        } else if (role == 'student') {
             User.findOne({
-                where: {id: userId},
+                where: { id: userId },
                 include: [
                     {
                         model: ClassRoom,
                         include: [
                             {
-                                model: User, 
+                                model: User,
                                 as: "Staff"
                             },
                             {
@@ -80,7 +80,7 @@ class classRoomController{
                     let tutorName = classRoom.Tutor.name
                     let staffName = classRoom.Staff.name
 
-                    classRoomData.push({ classId, className, tutorId, staffId, tutorName, staffName})
+                    classRoomData.push({ classId, className, tutorId, staffId, tutorName, staffName })
                 })
 
                 res.send(classRoomData)
@@ -88,20 +88,20 @@ class classRoomController{
         }
 
     }
-    
-    findPeopleByClassId(req, res){
+
+    findPeopleByClassId(req, res) {
         let { classId } = req.body
         ClassRoom.findOne({
-            where: {id : classId},
+            where: { id: classId },
             include: [
-                {model: User, as: "Tutor"},
-                {model: User, as: "Staff"},
-                {model: User, as: "Students"}
+                { model: User, as: "Tutor" },
+                { model: User, as: "Staff" },
+                { model: User, as: "Students" }
             ]
         }).then(foundClass => {
-            if(foundClass){
+            if (foundClass) {
                 let studentList = []
-                
+
                 foundClass.Students.forEach(student => {
                     studentList.push({
                         id: student.id,
@@ -116,9 +116,9 @@ class classRoomController{
                     students: studentList
                 }
 
-                res.send({status: true, classPeople})
-            }else{
-                res.send({status: false, message: "No class found!"})
+                res.send({ status: true, classPeople })
+            } else {
+                res.send({ status: false, message: "No class found!" })
             }
         })
     }
@@ -192,12 +192,12 @@ class classRoomController{
                 id: studentIds
             }
         }).then(students => {
-            if (!students) res.send({status: false, message: 'cannot find student'})
+            if (!students) res.send({ status: false, message: 'cannot find student' })
             ClassRoom.findOne({ where: { id: classId } })
                 .then((classRoom => {
-                    if (!classRoom) res.send({status: false, message: 'cannot find classroom'})
+                    if (!classRoom) res.send({ status: false, message: 'cannot find classroom' })
                     classRoom.addStudents(students);
-                    res.send({status: true, message: 'success!'})
+                    res.send({ status: true, message: 'success!' })
                 }))
         })
     }
@@ -231,42 +231,40 @@ class classRoomController{
         })
     }
 
-    createClassAndAssignStudents(req, res){
+    createClassAndAssignStudents(req, res) {
         let studentIds = [];
         let studentNames = [];
         let studentIdsJson = JSON.parse(req.body.studentIds)
         let studentNamesJson = JSON.parse(req.body.studentNames)
-        for(var i = 0; i < studentIdsJson.length; i++){
+        for (var i = 0; i < studentIdsJson.length; i++) {
             studentIds.push(studentIdsJson[`${i}`])
             studentNames.push(studentNamesJson[`${i}`])
         }
 
-        let {tutorId, staffId} = req.body;
-        
-        let studentEmails = [];
-        
-        for (var i = 0; i < studentIds.length; i ++){
-            let studentName =studentNames[i]
+        let { tutorId, staffId } = req.body;
+
+
+        for (var i = 0; i < studentIds.length; i++) {
+            let studentName = studentNames[i]
             let studentId = studentIds[i]
-            
+
             ClassRoom.create({
                 name: studentName,
                 TutorId: tutorId,
                 StaffId: staffId
             }).then(classCreated => {
                 User.findOne({
-                    where: {id: studentId}
+                    where: { id: studentId }
                 }).then(student => {
-                    studentEmails.push(student.dataValues.email)
                     classCreated.setStudents(student)
                 })
             })
         }
-        res.send({status: true, studentIds: studentIds})
+        res.send({ status: true })
     }
 
-    deleteClassByTutorIdAndClassName(req, res){
-        let {className, tutorId} = req.body
+    deleteClassByTutorIdAndClassName(req, res) {
+        let { className, tutorId } = req.body
         ClassRoom.destroy({
             where: { name: className, TutorId: tutorId }
         }).then(deleted => {
