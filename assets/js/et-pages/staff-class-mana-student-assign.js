@@ -150,9 +150,9 @@ var StudentTable = function () {
                         }
                     },
                     pageSize: 10,
-                    serverPaging: true,
-                    serverFiltering: true,
-                    serverSorting: true,
+                    serverPaging: false,
+                    serverFiltering: false,
+                    serverSorting: false,
                 },
                 layout: {
                     scroll: false,
@@ -160,7 +160,7 @@ var StudentTable = function () {
                 },
 
                 // column sorting
-                sortable: true,
+                sortable: false,
 
                 pagination: true,
 
@@ -213,6 +213,11 @@ var StudentTable = function () {
                 return $(nameField).text();
             })
 
+            var studentEmails = datatable.rows('.kt-datatable__row--active').nodes().find('[data-field="email"] > span').map(function (i, emailField) {
+                return $(emailField).text();
+            })
+
+            console.log(ids);
 
             if (ids.length > 0) {
                 // learn more: https://sweetalert2.github.io/
@@ -246,8 +251,18 @@ var StudentTable = function () {
                                     data: { tutorId: tutorId, staffId: staffId, studentIds: JSON.stringify(ids), studentNames: JSON.stringify(studentNames) },
                                     async: false,
                                 }).done((data) => {
+                                    console.log(data);
+                                })
+                                $.ajax({
+                                    method: "POST",
+                                    url: '/email/sendEmail',
+                                    data: { tutorId: tutorId, studentEmails: JSON.stringify(studentEmails), studentIds: JSON.stringify(ids), studentNames: JSON.stringify(studentNames) },
+                                    async: false,
+                                }).done((data) => {
+                                    console.log(data);
                                     window.location.reload();
                                 })
+                                
                             })
                         // result.dismiss can be 'cancel', 'overlay',
                         // 'close', and 'timer'

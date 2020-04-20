@@ -169,6 +169,21 @@ class UserController {
         })
     }
 
+    findStudentsWithoutClass(req, res) {
+        User.findAll({
+            where: {
+                role: 'student',
+                '$ClassRooms$': {[Op.is]: null}
+            },
+            include: [
+                {model: ClassRoom}
+            ]
+        }).then(users => {
+            res.send({status: true, users})
+
+        })
+    }
+
     findStudentWithNoTutor(req, res){
         User.findAll({
             attributes: ['id', 'name', 'fullname', 'email'],
@@ -341,19 +356,6 @@ class UserController {
             }
         })
     }
-    findStudentsWithoutClass(req, res) {
-        User.findAll({
-            where: {
-                role: 'student',
-                '$ClassRooms$': {[Op.is]: null}
-            },
-            include: [
-                {model: ClassRoom}
-            ]
-        }).then(users => {
-            res.send({status: true, users})
-
-        })
-    }
+    
 }
 module.exports = new UserController()
