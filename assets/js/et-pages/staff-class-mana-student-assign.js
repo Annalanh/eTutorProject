@@ -217,8 +217,6 @@ var StudentTable = function () {
                 return $(emailField).text();
             })
 
-            console.log(ids);
-
             if (ids.length > 0) {
                 // learn more: https://sweetalert2.github.io/
                 swal.fire({

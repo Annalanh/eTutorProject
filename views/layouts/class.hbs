@@ -166,7 +166,7 @@
                                     <i class="kt-menu__section-icon flaticon-more-v2"></i>
                                 </li>
                                 {{#if isStudent }}
-                                    <li class="kt-menu__item  kt-menu__item--submenu" aria-haspopup="true" data-ktmenu-submenu-toggle="hover">
+                                    <li class="kt-menu__item  kt-menu__item--submenu" aria-haspopup="true" data-ktmenu-submenu-toggle="hover" id="et-personal-tutor-aside-bar">
                                         <a class="kt-menu__link kt-menu__toggle" id="et-personal-tutor-href">
                                             <i class="kt-menu__link-icon flaticon-web"></i>
                                             <span class="kt-menu__link-text">Personal Tutor</span>
@@ -306,36 +306,6 @@
                                             </div>
                                         </div>
                                     </a>
-                                    {{#if isAdminOrStaff}}
-                                        <a href="/management" class="kt-notification__item">
-                                            <div class="kt-notification__item-icon">
-                                                <i class="flaticon2-rocket-1 kt-font-danger"></i>
-                                            </div>
-                                            <div class="kt-notification__item-details">
-                                                <div class="kt-notification__item-title kt-font-bold">
-                                                    Management
-                                                </div>
-                                                <div class="kt-notification__item-time">
-                                                    Assign tutors to tutees and manage accounts
-                                                </div>
-                                            </div>
-                                        </a>
-                                    {{/if}}
-                                    {{#if isTutorOrStudent}}
-                                        <a href="/blog" class="kt-notification__item">
-                                            <div class="kt-notification__item-icon">
-                                                <i class="flaticon2-rocket-1 kt-font-danger"></i>
-                                            </div>
-                                            <div class="kt-notification__item-details">
-                                                <div class="kt-notification__item-title kt-font-bold">
-                                                    Blog
-                                                </div>
-                                                <div class="kt-notification__item-time">
-                                                    My blogs with posts by me
-                                                </div>
-                                            </div>
-                                        </a>
-                                    {{/if}}
                                     <div class="kt-notification__custom kt-space-between">
                                         <a target="_blank" class="btn btn-label btn-label-brand btn-sm btn-bold" id="et-signout-btn">Sign Out</a>
                                     </div>
@@ -359,7 +329,7 @@
                     <div class="kt-container  kt-container--fluid ">
                         <div class="kt-subheader__main">
                             <h3 class="kt-subheader__title">
-                                Classname </h3>
+                                Interaction room </h3>
                             <span class="kt-subheader__separator kt-hidden"></span>
                             <div class="kt-subheader__breadcrumbs">
                                 <a href="#" class="kt-subheader__breadcrumbs-home"><i

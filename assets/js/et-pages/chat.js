@@ -20,6 +20,7 @@ const $searchNotFound = document.getElementById('et-search-not-found')
 const $replyBtn = document.getElementById('et-reply-btn')
 const $chatListItems = $chatList.childNodes
 const $callBtn = document.getElementById('et-call-btn')
+const $studentList = document.getElementById('et-student-list')
 
 let userGroupChats = []
 let newGroup = false;
@@ -88,6 +89,105 @@ $.ajax({
      */
     socket.emit("joinOnline", { rooms: userGroupChats })
 });
+
+/**
+ * get tutees list
+ */
+$.ajax({
+    url: '/user/findStudentsByTutorId',
+    method: "GET"
+}).done(data => {
+    if(data.status){
+        let students = data.students
+        renderStudentList(students)
+    }else console.log(data.message)
+})
+
+/**
+ * render tutee list
+ */
+function renderStudentList(students){
+    let btnColor = ''
+    students.forEach((student, index) => {
+        if(index % 4 == 0) btnColor = 'brand'
+        else if(index % 4 == 1) btnColor = 'warning'
+        else if(index % 4 == 2) btnColor = 'danger'
+        else if(index % 4 == 3) btnColor = 'success'
+
+        let $studentListItem = document.createElement('div')
+        $studentListItem.classList.add('kt-widget4__item')
+        $studentListItem.innerHTML =`<div class="kt-widget4__pic kt-widget4__pic--pic">
+                                        <span class="kt-media kt-media--circle">
+                                            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1" class="kt-svg-icon">
+                                                <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                                                    <rect x="0" y="0" width="24" height="24"/>
+                                                    <circle fill="#000000" opacity="0.3" cx="12" cy="12" r="10"/>
+                                                    <path d="M12,11 C10.8954305,11 10,10.1045695 10,9 C10,7.8954305 10.8954305,7 12,7 C13.1045695,7 14,7.8954305 14,9 C14,10.1045695 13.1045695,11 12,11 Z M7.00036205,16.4995035 C7.21569918,13.5165724 9.36772908,12 11.9907452,12 C14.6506758,12 16.8360465,13.4332455 16.9988413,16.5 C17.0053266,16.6221713 16.9988413,17 16.5815,17 L7.4041679,17 C7.26484009,17 6.98863236,16.6619875 7.00036205,16.4995035 Z" fill="#000000" opacity="0.3"/>
+                                                </g>
+                                            </svg>
+                                        </span>
+                                    </div>
+                                    <div class="kt-widget4__info">
+                                        <a href="#" class="kt-widget4__username">
+                                            ${student.name}
+                                        </a>
+                                        <p class="kt-widget4__text">
+                                            ${student.email}
+                                        </p>
+                                    </div>
+                                    <a class="btn btn-sm btn-label-${btnColor} btn-bold et-student-chat-btn" >Chat</a>`
+        $studentList.appendChild($studentListItem)
+
+        let $studentChatBtn = $studentListItem.querySelector('.et-student-chat-btn')
+        $studentChatBtn.addEventListener('click', () => {
+            let studentName = student.name
+            let studentId = student.id
+            let foundGroup = false
+            /**
+             * search student in current chat list
+             */
+            for(let i = 0; i < $chatListItems.length;i++){
+                let groupName = $chatListItems[i].querySelector(".kt-widget__username").innerText
+                $chatListItems[i].classList.remove('et-top-chat-item')
+                if(studentName == groupName){
+                    foundGroup = true
+                    $chatListItems[i].classList.add('et-top-chat-item')
+                    clickOnFoundChatItem()
+                    break
+                }
+            }
+            /**
+             * if there is no student existing, create new chat with student
+             */
+            if(!foundGroup){
+                let partnerId = studentId
+                let memberIdList = [partnerId]
+                
+                let sendData = {
+                    groupName: null,
+                    memberIdList: memberIdList
+                }
+        
+                $.ajax({
+                    url: '/group/createNewGroup',
+                    method:"POST",
+                    data: JSON.stringify(sendData),
+                    contentType: 'application/json'
+                }).then((data) => {
+                    if(data.status){
+                        let groupId = data.records[0].groupId
+                        let groupName = studentName
+                        hideSearchListShowChatList()
+                        renderMessageBox({groupId, groupName, answererId: partnerId })
+                    }
+                })
+            }
+
+        })
+        
+    })
+}
+
 /**
  * disable/enable reply button
  */

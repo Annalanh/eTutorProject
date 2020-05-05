@@ -5,6 +5,104 @@ const $generalSearch = document.getElementById('generalSearch')
 const $majorSelectMenu = document.getElementById('et-major-select-menu')
 const $clearFilterBtn = document.getElementById('et-clear-filter-btn')
 const $studentStats = document.getElementById('et-student-stats')
+const $averageMessage = document.getElementById('et-average-message')
+
+/**
+ * render average messages per week chart
+ */
+$.ajax({
+    method:'POST',
+    url: '/user/findMessagesByUserId',
+    data: { userId: localStorage.getItem('userId')}
+}).done(data => {
+    if(data.status){
+        let messages = data.messages
+
+        let messageData = [{
+            "month": "Jan",
+            "messages": 0
+        }, {
+            "month": "Feb",
+            "messages": 0
+        }, {
+            "month": "Mar",
+            "messages": 0
+        }, {
+            "month": "Apr",
+            "messages": 0
+        }, {
+            "month": "May",
+            "messages": 0
+        }, {
+            "month": "Jun",
+            "messages": 0
+        }, {
+            "month": "Jul",
+            "messages": 0
+        }, {
+            "month": "Aug",
+            "messages": 0
+        }, {
+            "month": "Sep",
+            "messages": 0
+        }, {
+            "month": "Oct",
+            "messages": 0
+        }, {
+            "month": "Nov",
+            "messages": 0
+        }, {
+            "month": "Dec",
+            "messages": 0
+        }]
+    
+        messages.forEach(message => {
+            let createdAtDate = moment(message.createdAt)
+            let createdAtMonth = createdAtDate.month()
+            messageData[createdAtMonth]["messages"] = messageData[createdAtMonth]["messages"] += 1
+        })
+
+        let todayMonth = moment().month()
+        $averageMessage.innerText = messageData[todayMonth]['messages']
+
+        createChart(messageData)
+    }else{
+        console.log(data.status)
+    }
+})
+/**
+ * render chart 
+ */
+function createChart(data){
+    AmCharts.makeChart("kt_amcharts_1", {
+        "rtl": KTUtil.isRTL(),
+        "type": "serial",
+        "theme": "light",
+        "dataProvider": data,
+        "gridAboveGraphs": true,
+        "startDuration": 1,
+        "graphs": [{
+            "balloonText": "[[category]]: <b>[[value]] messages/week</b>",
+            "fillAlphas": 0.8,
+            "lineAlpha": 0.2,
+            "type": "column",
+            "valueField": "messages"
+        }],
+        "chartCursor": {
+            "categoryBalloonEnabled": false,
+            "cursorAlpha": 0,
+            "zoomable": false
+        },
+        "categoryField": "month",
+        "categoryAxis": {
+            "gridPosition": "start",
+            "gridAlpha": 0,
+            "tickPosition": "start",
+            "tickLength": 20
+        }
+    });    
+}
+
 /**
  * get today's meetings
  */

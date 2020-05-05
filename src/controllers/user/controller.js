@@ -288,6 +288,22 @@ class UserController {
         })
     }
 
+    findMessagesByUserId(req, res){
+        let userId = req.body.userId
+
+        Message.findAll({
+            where: {
+                UserId: userId
+            },
+            order:[
+                ['createdAt', 'asc']
+            ]
+        }).then(messages => {
+            if(messages) res.send({ status: true, messages })
+            else res.send({ status: false, message: 'Cannot find messages!' })
+        })
+    }
+
     findMeetingsByTutorId(req, res){
         let userId = req.session.user.userId
 

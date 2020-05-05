@@ -73,5 +73,43 @@ class MessageController{
             if(newMessage) res.send(true)
         })
     }
+
+    getTutorAverageMessageByMonths(req, res){
+        let tutorNumberByMonths = [0,0,0,0,0,0,0,0,0,0,0,0]
+
+        User.findAll({
+            where: { role: "tutor" },
+            include: {
+                model: Message
+            }
+        }).then(tutors => {
+            
+        })
+    }
+
+    getTopFiveTutorsManyMessages(req, res){
+        User.findAll({
+            where: { role: 'tutor' },
+            include: {
+                model: Message
+            }
+        }).then(tutors => {
+            if(tutors){
+                let tutorNumber = tutors.length
+                tutors.sort(function(a,b){
+                    return b.Messages.length - a.Messages.length
+                })
+
+                if(tutorNumber > 5){
+                    tutors.slice(0,5)
+                }
+                
+                res.send({ status: true, tutors })                
+            }else{
+                res.send({ status: false, message: "Cannot get tutors' message data!"})
+            }
+        })
+    }
+
 }
 module.exports = new MessageController()

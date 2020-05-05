@@ -4,6 +4,7 @@ const $studentNoInteractionTwentyEightList = document.getElementById('et-student
 const $noTutorStats = document.getElementById('et-no-tutor-stats')
 const $pairStats = document.getElementById('et-pair-stats')
 const userId = window.location.pathname.split("/")[2]
+const $topFiveTutorMessageList = document.getElementById('et-top-five-tutor-message-list')
 
 
 $.ajax({
@@ -41,6 +42,19 @@ $.ajax({
 })
 
 /**
+ * get top five tutors have many messages
+ */
+$.ajax({
+    url: '/message/getTopFiveTutorsManyMessages',
+    method: "GET"
+}).done(data => {
+    if(data.status){
+        renderUserList($topFiveTutorMessageList, data.tutors)
+    }else{
+        console.log(data.message)
+    }
+})
+/**
  * render user list function
  */
 function renderUserList(container, userData){
@@ -67,6 +81,7 @@ function renderUserList(container, userData){
  * render no interaction student list
  */
 function renderStudentsNoInteraction({ days, students, container }){
+    let studentNumber = students.length
     let studentsNoInteraction = []
 
     let now = moment();
@@ -106,4 +121,32 @@ function renderStudentsNoInteraction({ days, students, container }){
     })
 
     renderUserList(container, studentsNoInteraction)
+    renderStudentInteractionChart({ studentNumber, studentsNoInteractionNumber: studentsNoInteraction.length, days })
+}
+
+/**
+ * render student interaction chart
+ */
+function renderStudentInteractionChart({ studentNumber, studentsNoInteractionNumber, days }){
+    let studentsHaveInteractionNumber = studentNumber - studentsNoInteractionNumber
+    let studentsHaveInteractionPercent = Math.round(studentsHaveInteractionNumber/studentNumber * 100)
+    let studentsNoInteractionPercent = Math.round(studentsNoInteractionNumber/studentNumber * 100)
+
+    createPieChart({ studentsHaveInteractionPercent, studentsNoInteractionPercent, days })
+}
+/**
+ * create pie chart
+ */
+function createPieChart({ studentsHaveInteractionPercent, studentsNoInteractionPercent, days }){
+    var data = [
+        {label: `no interaction`, data: studentsNoInteractionPercent, color:  KTApp.getStateColor("brand")},
+        {label: `have interaction`, data: studentsHaveInteractionPercent, color:  KTApp.getStateColor("danger")},
+    ];
+    $.plot($(`#et-student-interaction-chart-${days}`), data, {
+        series: {
+            pie: {
+                show: true
+            }
+        }
+    });
 }

@@ -8,7 +8,6 @@ const $sharedFileList = document.getElementById('et-shared-file-list')
 /**
  * initially render today's meetings and shared files
  */
-
 $.ajax({
     url: '/user/findMeetingsAndFilesByUserId',
     method: 'POST',
@@ -18,6 +17,9 @@ $.ajax({
         //render meetings
         let meetings = data.meetings
 
+        //render meetings chart
+        renderAverageMeetingChart(meetings)
+        
         meetings.forEach(meeting => {
             let { name, startTime, tutorConfirmed, studentConfirmed } = meeting
             //get today meeting
@@ -142,4 +144,162 @@ function renderRecentMessage({ message, container}){
                                 </a>
                                 <span class="kt-widget4__number kt-font-info">${createdAt}</span>`
     container.appendChild($recentMessage)
+}
+
+/**
+ * render average messages per week chart
+ */
+$.ajax({
+    method:'POST',
+    url: '/user/findMessagesByUserId',
+    data: { userId: localStorage.getItem('userId')}
+}).done(data => {
+    if(data.status){
+        let messages = data.messages
+
+        let messageData = [{
+            "month": "Jan",
+            "messages": 0
+        }, {
+            "month": "Feb",
+            "messages": 0
+        }, {
+            "month": "Mar",
+            "messages": 0
+        }, {
+            "month": "Apr",
+            "messages": 0
+        }, {
+            "month": "May",
+            "messages": 0
+        }, {
+            "month": "Jun",
+            "messages": 0
+        }, {
+            "month": "Jul",
+            "messages": 0
+        }, {
+            "month": "Aug",
+            "messages": 0
+        }, {
+            "month": "Sep",
+            "messages": 0
+        }, {
+            "month": "Oct",
+            "messages": 0
+        }, {
+            "month": "Nov",
+            "messages": 0
+        }, {
+            "month": "Dec",
+            "messages": 0
+        }]
+    
+        messages.forEach(message => {
+            let createdAtDate = moment(message.createdAt)
+            let createdAtMonth = createdAtDate.month()
+            messageData[createdAtMonth]["messages"] = messageData[createdAtMonth]["messages"] += 1
+        })
+
+        createChart({ data: messageData, chartId: "et-message-chart" })
+    }else{
+        console.log(data.status)
+    }
+})
+/**
+ * render chart 
+ */
+function createChart({ data, chartId }){
+    let valueField = ''
+    let balloonText = ''
+    let chartTheme = ''
+
+    if(chartId == "et-message-chart"){
+        valueField = "messages"
+        balloonText = "messages/week"
+        chartTheme = 'light'
+    }else{
+        valueField = "meetings"
+        balloonText = "meetings/week"
+        chartTheme = 'dark'
+    }
+
+    AmCharts.makeChart(chartId, {
+        "rtl": KTUtil.isRTL(),
+        "type": "serial",
+        "theme": chartTheme,
+        "dataProvider": data,
+        "gridAboveGraphs": true,
+        "startDuration": 1,
+        "graphs": [{
+            "balloonText": `[[category]]: <b>[[value]] ${balloonText}</b>`,
+            "fillAlphas": 0.8,
+            "lineAlpha": 0.2,
+            "type": "column",
+            "valueField": valueField
+        }],
+        "chartCursor": {
+            "categoryBalloonEnabled": false,
+            "cursorAlpha": 0,
+            "zoomable": false
+        },
+        "categoryField": "month",
+        "categoryAxis": {
+            "gridPosition": "start",
+            "gridAlpha": 0,
+            "tickPosition": "start",
+            "tickLength": 20
+        }
+    });    
+}
+
+/**
+ * render average meeting per week charts function 
+ */
+function renderAverageMeetingChart(meetings){
+    let meetingData = [{
+        "month": "Jan",
+        "meetings": 0
+    }, {
+        "month": "Feb",
+        "meetings": 0
+    }, {
+        "month": "Mar",
+        "meetings": 0
+    }, {
+        "month": "Apr",
+        "meetings": 0
+    }, {
+        "month": "May",
+        "meetings": 0
+    }, {
+        "month": "Jun",
+        "meetings": 0
+    }, {
+        "month": "Jul",
+        "meetings": 0
+    }, {
+        "month": "Aug",
+        "meetings": 0
+    }, {
+        "month": "Sep",
+        "meetings": 0
+    }, {
+        "month": "Oct",
+        "meetings": 0
+    }, {
+        "month": "Nov",
+        "meetings": 0
+    }, {
+        "month": "Dec",
+        "meetings": 0
+    }]
+
+    meetings.forEach(meeting => {
+        let createdAtDate = moment(meeting.createdAt)
+        let createdAtMonth = createdAtDate.month()
+        meetingData[createdAtMonth]["meetings"] = meetingData[createdAtMonth]["meetings"] += 1
+    })
+
+    createChart({ data: meetingData, chartId: "et-meeting-chart" })
 }

@@ -13,7 +13,7 @@
 		<div class="kt-portlet__body kt-portlet__body--fluid">
 			<div class="kt-widget20">
 				<div class="kt-widget20__content kt-portlet__space-x">
-					<span class="kt-widget20__number kt-font-brand">5</span>
+					<span class="kt-widget20__number kt-font-brand" id="et-average-message"></span>
 					<span class="kt-widget20__desc">Average messages</span>
 				</div>
 				<div class="kt-widget20__chart" style="height:130px;">
@@ -62,7 +62,25 @@
 
 	<!--end::statistic-->
 
-	<!--begin:;Today Meetings-->
+	<!--begin::Monthly messages-->
+	<div class="kt-portlet">
+		<div class="kt-portlet__head">
+			<div class="kt-portlet__head-label">
+				<span class="kt-portlet__head-icon kt-hidden">
+					<i class="la la-gear"></i>
+				</span>
+				<h3 class="kt-portlet__head-title">
+					Average messages per week
+				</h3>
+			</div>
+		</div>
+		<div class="kt-portlet__body">
+			<div id="kt_amcharts_1" style="height: 500px;"></div>
+		</div>
+	</div>
+	<!--end::Monthly messages-->
+
+	<!--begin::Today Meetings-->
 	<div class="kt-portlet">
 		<div class="kt-portlet__head">
 			<div class="kt-portlet__head-label">
@@ -75,8 +93,7 @@
 
 			<!--Begin::Timeline 3 -->
 			<div class="kt-timeline-v2">
-				<div class="kt-timeline-v2__items  kt-padding-top-25 kt-padding-bottom-30"
-					id="et-today-meeting-list">
+				<div class="kt-timeline-v2__items  kt-padding-top-25 kt-padding-bottom-30" id="et-today-meeting-list">
 				</div>
 			</div>
 
@@ -116,8 +133,7 @@
 							<!--begin::Search name-->
 							<div class="col-md-4 kt-margin-b-20-tablet-and-mobile">
 								<div class="kt-input-icon kt-input-icon--left">
-									<input type="text" class="form-control" placeholder="Search..."
-										id="generalSearch">
+									<input type="text" class="form-control" placeholder="Search..." id="generalSearch">
 									<span class="kt-input-icon__icon kt-input-icon__icon--left">
 										<span><i class="la la-search"></i></span>
 									</span>
@@ -136,8 +152,10 @@
 							</div>
 							<!--begin::Filter major-->
 							<div class="col-md-4 kt-margin-b-20-tablet-and-mobile">
-								<button type='button' class='btn btn-label-brand' id="et-filter-student-btn">Filter</button>
-								<button type='button' class='btn btn-label-danger' id="et-clear-filter-btn">Clear</button>
+								<button type='button' class='btn btn-label-brand'
+									id="et-filter-student-btn">Filter</button>
+								<button type='button' class='btn btn-label-danger'
+									id="et-clear-filter-btn">Clear</button>
 							</div>
 						</div>
 					</div>
@@ -150,8 +168,7 @@
 		<div class="kt-portlet__body kt-portlet__body--fit">
 
 			<!--begin: Datatable -->
-			<div class="kt-datatable kt-datatable--default kt-datatable--brand kt-datatable--loaded"
-				id="local_data">
+			<div class="kt-datatable kt-datatable--default kt-datatable--brand kt-datatable--loaded" id="local_data">
 				<table class="kt-datatable__table" style="display: block; overflow:scroll">
 					<thead class="kt-datatable__head">
 						<tr class="kt-datatable__row" style="left: 0px;">
@@ -181,5 +198,4 @@
 		</div>
 	</div>
 	<!--end::Tutee list-->
-
 </div>

@@ -19,6 +19,7 @@ const $answerCallModal = document.getElementById('et_answer_call_modal')
 const $declineCallBtn = document.getElementById('et-decline-call-btn')
 const $acceptCallBtn = document.getElementById('et-accept-call-btn')
 const $incomingPhoneCallAudio = document.getElementById('et-incoming-phone-call-audio')
+const $personalTutorAsideBar = document.getElementById('et-personal-tutor-aside-bar')
 
 /**
  * setup topbar username, badge and its dropdown
@@ -42,8 +43,21 @@ if($personalTutorHref){
         method: "POST",
         data: {userId: localStorage.getItem('userId'),role: localStorage.getItem('role')}
     }).done(classRooms => {
-        let classId = classRooms[0].classId
-        $personalTutorHref.href = `/class/${classId}/stream`
+        if(classRooms.length != 0){
+            let classId = classRooms[0].classId
+            $personalTutorHref.href = `/class/${classId}/stream`      
+        }else{
+            $personalTutorAsideBar.addEventListener('click', (e) => {
+                swal.fire({
+                    title: 'No Tutor!',
+                    text: 'You have not had any tutor yet. Please contact the office',
+                    type: 'error',
+                    buttonsStyling: false,
+                    confirmButtonText: "OK",
+                    confirmButtonClass: "btn btn-sm btn-bold btn-brand",
+                });
+            })
+        }
     })
 }
 
