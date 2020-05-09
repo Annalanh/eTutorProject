@@ -101,7 +101,48 @@ sequelize.sync({ force: true })
     fullname: 'Admin Nguyen',
     password: '$2b$10$LfiaPWdgq7ic.VCea8T3oeWQ8Q/wI1P6G6d46p28reMI6wsXSxS5G',
     role: 'admin',
-    email: 'AdminA@gmail.com',
+    email: 'admin@gmail.com',
+  }).then((userCreated) => {
+    console.log(userCreated)
+  })
+
+  User.create({
+    name: 'staff',
+    fullname: 'Staff Nguyen',
+    password: '$2b$10$LfiaPWdgq7ic.VCea8T3oeWQ8Q/wI1P6G6d46p28reMI6wsXSxS5G',
+    role: 'staff',
+    email: 'staff@gmail.com',
+  }).then((userCreated) => {
+    console.log(userCreated)
+  })
+
+  User.create({
+    name: 'staffA',
+    fullname: 'StaffA Nguyen',
+    password: '$2b$10$LfiaPWdgq7ic.VCea8T3oeWQ8Q/wI1P6G6d46p28reMI6wsXSxS5G',
+    role: 'staff',
+    email: 'staffA@gmail.com',
+    authorizedStaff: true
+  }).then((userCreated) => {
+    console.log(userCreated)
+  })
+
+  User.create({
+    name: 'tutor',
+    fullname: 'Tutor Nguyen',
+    password: '$2b$10$LfiaPWdgq7ic.VCea8T3oeWQ8Q/wI1P6G6d46p28reMI6wsXSxS5G',
+    role: 'tutor',
+    email: 'tutor@gmail.com',
+  }).then((userCreated) => {
+    console.log(userCreated)
+  })
+
+  User.create({
+    name: 'student',
+    fullname: 'Student Nguyen',
+    password: '$2b$10$LfiaPWdgq7ic.VCea8T3oeWQ8Q/wI1P6G6d46p28reMI6wsXSxS5G',
+    role: 'student',
+    email: 'student@gmail.com',
   }).then((userCreated) => {
     console.log(userCreated)
   })
