@@ -97,8 +97,8 @@ sequelize.sync({ force: true })
 .then(() => {
   console.log('Database & table created')
   User.create({
-    name: 'AdminA',
-    fullname: 'AdminA Nguyen',
+    name: 'admin',
+    fullname: 'Admin Nguyen',
     password: '$2b$10$LfiaPWdgq7ic.VCea8T3oeWQ8Q/wI1P6G6d46p28reMI6wsXSxS5G',
     role: 'admin',
     email: 'AdminA@gmail.com',
