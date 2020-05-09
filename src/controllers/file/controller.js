@@ -37,11 +37,16 @@ class FileController{
                         console.log('dirname',__dirname)
                         console.log('newPath', newPath)
 
-                        fs.renameSync(oldPath, newPath, (err) => {
-                            if(err){
-                                console.log(err)
-                            }
-                        })
+                        // fs.renameSync(oldPath, newPath, (err) => {
+                        //     if(err){
+                        //         console.log(err)
+                        //     }
+                        // })
+
+                        fs.copyFile(oldPath, newPath, (err) => {
+                            if (err) throw err;
+                            console.log('file copied to new dir');
+                        });
 
                         createdFileList.push({
                             path: `/uploads/${file.name}`,
