@@ -100,20 +100,20 @@ function renderStudentsNoInteraction({ days, students, container }){
         if(messages.length == 0) noMessage = true
         else{
             let latestMessageTime = messages[0].createdAt
-            if(now.diff(latestMessageTime, 'minutes') > days) noMessage = true
+            if(now.diff(latestMessageTime, 'days') > days) noMessage = true
         }
 
         if(posts.length == 0) noPost = true
         else {
             let latestPostTime = posts[0].createdAt
-            if(now.diff(latestPostTime, 'minutes') > days) noPost = true
+            if(now.diff(latestPostTime, 'days') > days) noPost = true
         }
 
       
         if(meetings.length == 0) noMeeting = true
         else {
             let latestMeetingTime = meetings[0].createdAt
-            if(now.diff(latestMeetingTime, 'minutes') > days) noMeeting = true
+            if(now.diff(latestMeetingTime, 'days') > days) noMeeting = true
         }
 
         if(noMessage && noMeeting && noPost) studentsNoInteraction.push(student)
