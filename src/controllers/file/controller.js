@@ -31,6 +31,8 @@ class FileController{
 
                     fileList.forEach(file => {
                         let oldPath = file.path;
+                        console.log(oldPath)
+                        console.log(__dirname)
                         let newPath = path.join(__dirname,'../../../',`assets/uploads/${file.name}`)
 
                         fs.renameSync(oldPath, newPath, (err) => {
